@@ -1,5 +1,64 @@
 package modelo;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+
 public class Alerta {
 
+    private int tiempo;
+    private boolean recurrente;
+    private String mensaje;
+
+    public Alerta(int tiempo, boolean recurrente, String mensaje) {
+        this.tiempo = tiempo;
+        this.recurrente = recurrente;
+        this.mensaje = mensaje;
+    }
+
+    public int getTiempo() {
+        return tiempo;
+    }
+
+    public void setTiempo(int tiempo) {
+        this.tiempo = tiempo;
+    }
+
+    public boolean isRecurrente() {
+        return recurrente;
+    }
+
+    public void setRecurrente(boolean recurrente) {
+        this.recurrente = recurrente;
+    }
+
+    public String getMensaje() {
+        return mensaje;
+    }
+
+    public void setMensaje(String mensaje) {
+        this.mensaje = mensaje;
+    }
+
+    public boolean debeMostrarse(LocalDate fechaPrestamo) {
+        if (fechaPrestamo == null) {
+            return false;
+        }
+
+        long dias = ChronoUnit.DAYS.between(fechaPrestamo, LocalDate.now());
+
+        if (dias < tiempo) {
+            return false;
+        }
+
+        if (recurrente) {
+            return dias % tiempo == 0;
+        }
+
+        return dias == tiempo;
+    }
+
+    @Override
+    public String toString() {
+        return mensaje;
+    }
 }
