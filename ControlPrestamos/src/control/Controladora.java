@@ -25,6 +25,8 @@ public class Controladora {
         items = new ArrayList<Item>();
         tipos = new ArrayList<Tipo>();
         categorias = new ArrayList<Categoria>();
+
+        agregarTipo("Generico");
     }
 
     public static Controladora getInstancia() {
@@ -35,24 +37,28 @@ public class Controladora {
         return instancia;
     }
 
+    // ---------------- PERSONAS ----------------
 
-    public void agregarPersona(Persona persona) {
-        if (persona != null && obtenerPersona(persona.getNombre()) == null) {
+    public void agregarPersona(String nombre, String telefono, String correo) {
+        if (nombre != null && obtenerPersona(nombre) == null) {
+            Persona persona = new Persona(nombre, telefono, correo);
             personas.add(persona);
         }
     }
 
-    public void modificarPersona(Persona persona) {
-        Persona personaEncontrada = obtenerPersona(persona.getNombre());
+    public void modificarPersona(String nombre, String nuevoTelefono, String nuevoCorreo) {
+        Persona persona = obtenerPersona(nombre);
 
-        if (personaEncontrada != null) {
-            personaEncontrada.setTelefono(persona.getTelefono());
-            personaEncontrada.setCorreo(persona.getCorreo());
+        if (persona != null) {
+            persona.setTelefono(nuevoTelefono);
+            persona.setCorreo(nuevoCorreo);
         }
     }
 
-    public void eliminarPersona(Persona persona) {
-        if (persona != null && !persona.tienePrestamoActivo()) {
+    public void eliminarPersona(String nombre) {
+        Persona persona = obtenerPersona(nombre);
+
+        if (persona != null && !persona.tienePrestamosActivos()) {
             personas.remove(persona);
         }
     }
@@ -71,24 +77,51 @@ public class Controladora {
         return personas;
     }
 
+    // ---------------- ITEMS ----------------
 
-    public void agregarItem(Item item) {
-        if (item != null && obtenerItem(item.getNombre()) == null) {
-            items.add(item);
+    public void agregarItem(String nombre, String descripcion, String nombreTipo) {
+        if (nombre == null || obtenerItem(nombre) != null) {
+            return;
+        }
+
+        Tipo tipo = obtenerTipo(nombreTipo);
+
+        if (tipo == null) {
+            tipo = obtenerTipo("Generico");
+        }
+
+        Item item = new Item(nombre, descripcion, tipo);
+        items.add(item);
+    }
+
+    public void modificarItem(String nombre, String nuevaDescripcion, String nuevoTipo) {
+        Item item = obtenerItem(nombre);
+
+        if (item != null) {
+            item.setDescripcion(nuevaDescripcion);
+
+            Tipo tipo = obtenerTipo(nuevoTipo);
+
+            if (tipo != null) {
+                item.setTipo(tipo);
+            }
         }
     }
 
-    public void modificarItem(Item item) {
-        Item itemEncontrado = obtenerItem(item.getNombre());
+    public void eliminarItem(String nombre) {
+        Item item = obtenerItem(nombre);
 
-        if (itemEncontrado != null) {
-            itemEncontrado.setDescripcion(item.getDescripcion());
-            itemEncontrado.setTipo(item.getTipo());
-        }
-    }
-
-    public void eliminarItem(Item item) {
         if (item != null && !item.isPrestado()) {
+            if (item.getTipo() != null) {
+                item.getTipo().eliminarItem(item);
+            }
+
+            ArrayList<Categoria> copiaCategorias = new ArrayList<Categoria>(item.getCategorias());
+
+            for (Categoria categoria : copiaCategorias) {
+                item.eliminarCategoria(categoria);
+            }
+
             items.remove(item);
         }
     }
@@ -107,24 +140,60 @@ public class Controladora {
         return items;
     }
 
-    public void agregarTipo(Tipo tipo) {
-        if (tipo != null && obtenerTipo(tipo.getNombre()) == null) {
+    public void agregarCategoriaAItem(String nombreItem, String nombreCategoria) {
+        Item item = obtenerItem(nombreItem);
+        Categoria categoria = obtenerCategoria(nombreCategoria);
+
+        if (item != null && categoria != null) {
+            item.agregarCategoria(categoria);
+        }
+    }
+
+    public void eliminarCategoriaDeItem(String nombreItem, String nombreCategoria) {
+        Item item = obtenerItem(nombreItem);
+        Categoria categoria = obtenerCategoria(nombreCategoria);
+
+        if (item != null && categoria != null) {
+            item.eliminarCategoria(categoria);
+        }
+    }
+
+    // ---------------- TIPOS ----------------
+
+    public void agregarTipo(String nombre) {
+        if (nombre != null && obtenerTipo(nombre) == null) {
+            Tipo tipo = new Tipo(nombre);
             tipos.add(tipo);
         }
     }
 
-    public void modificarTipo(Tipo tipo) {
-        Tipo tipoEncontrado = obtenerTipo(tipo.getNombre());
+    public void modificarTipo(String nombreActual, String nuevoNombre) {
+        Tipo tipo = obtenerTipo(nombreActual);
 
-        if (tipoEncontrado != null) {
-            tipoEncontrado.setNombre(tipo.getNombre());
+        if (tipo != null) {
+            tipo.setNombre(nuevoNombre);
         }
     }
 
-    public void eliminarTipo(Tipo tipo) {
-        if (tipo != null) {
-            tipos.remove(tipo);
+    public void eliminarTipo(String nombre) {
+        Tipo tipo = obtenerTipo(nombre);
+
+        if (tipo == null) {
+            return;
         }
+
+        if (tipo.getNombre().equalsIgnoreCase("Generico")) {
+            return;
+        }
+
+        Tipo generico = obtenerTipo("Generico");
+        ArrayList<Item> copiaItems = new ArrayList<Item>(tipo.getItems());
+
+        for (Item item : copiaItems) {
+            item.setTipo(generico);
+        }
+
+        tipos.remove(tipo);
     }
 
     public Tipo obtenerTipo(String nombre) {
@@ -141,23 +210,33 @@ public class Controladora {
         return tipos;
     }
 
- 
-    public void agregarCategoria(Categoria categoria) {
-        if (categoria != null && obtenerCategoria(categoria.getNombre()) == null) {
+    // ---------------- CATEGORIAS ----------------
+
+    public void agregarCategoria(String nombre) {
+        if (nombre != null && obtenerCategoria(nombre) == null) {
+            Categoria categoria = new Categoria(nombre);
             categorias.add(categoria);
         }
     }
 
-    public void modificarCategoria(Categoria categoria) {
-        Categoria categoriaEncontrada = obtenerCategoria(categoria.getNombre());
+    public void modificarCategoria(String nombreActual, String nuevoNombre) {
+        Categoria categoria = obtenerCategoria(nombreActual);
 
-        if (categoriaEncontrada != null) {
-            categoriaEncontrada.setNombre(categoria.getNombre());
+        if (categoria != null) {
+            categoria.setNombre(nuevoNombre);
         }
     }
 
-    public void eliminarCategoria(Categoria categoria) {
+    public void eliminarCategoria(String nombre) {
+        Categoria categoria = obtenerCategoria(nombre);
+
         if (categoria != null) {
+            ArrayList<Item> copiaItems = new ArrayList<Item>(categoria.getItems());
+
+            for (Item item : copiaItems) {
+                item.eliminarCategoria(categoria);
+            }
+
             categorias.remove(categoria);
         }
     }
@@ -176,37 +255,88 @@ public class Controladora {
         return categorias;
     }
 
+    // ---------------- PRESTAMOS ----------------
 
-    public void agregarPrestamo(Prestamo prestamo) {
-        if (prestamo != null && !prestamos.contains(prestamo)) {
+    public void agregarPrestamo(String nombrePersona) {
+        Persona persona = obtenerPersona(nombrePersona);
+
+        if (persona != null) {
+            Prestamo prestamo = new Prestamo(persona);
             prestamos.add(prestamo);
         }
     }
 
-    public Prestamo hacerPrestamo(Persona persona, ArrayList<Item> itemsPrestamo, Alerta alerta) {
-        if (persona == null || itemsPrestamo == null || itemsPrestamo.isEmpty()) {
+    public Prestamo obtenerPrestamoActivo(String nombrePersona) {
+        Persona persona = obtenerPersona(nombrePersona);
+
+        if (persona == null) {
             return null;
         }
 
-        Prestamo prestamo = new Prestamo(persona);
-        prestamo.setAlerta(alerta);
-
-        for (Item item : itemsPrestamo) {
-            prestamo.agregarItem(item);
-        }
-
-        if (!prestamo.getItems().isEmpty()) {
-            agregarPrestamo(prestamo);
-            return prestamo;
+        for (Prestamo prestamo : persona.getPrestamos()) {
+            if (!prestamo.isFinalizado()) {
+                return prestamo;
+            }
         }
 
         return null;
     }
 
-    public void eliminarPrestamo(Prestamo prestamo) {
+    public void agregarItemAPrestamo(String nombrePersona, String nombreItem) {
+        Prestamo prestamo = obtenerPrestamoActivo(nombrePersona);
+        Item item = obtenerItem(nombreItem);
+
+        if (prestamo != null && item != null) {
+            prestamo.agregarItem(item);
+        }
+    }
+
+    public void eliminarItemDePrestamo(String nombrePersona, String nombreItem) {
+        Prestamo prestamo = obtenerPrestamoActivo(nombrePersona);
+        Item item = obtenerItem(nombreItem);
+
+        if (prestamo != null && item != null) {
+            prestamo.eliminarItem(item);
+        }
+    }
+
+    public void retornarItemDePrestamo(String nombrePersona, String nombreItem) {
+        Prestamo prestamo = obtenerPrestamoActivo(nombrePersona);
+        Item item = obtenerItem(nombreItem);
+
+        if (prestamo != null && item != null) {
+            prestamo.retornarItem(item);
+        }
+    }
+
+    public void finalizarPrestamo(String nombrePersona) {
+        Prestamo prestamo = obtenerPrestamoActivo(nombrePersona);
+
         if (prestamo != null) {
             prestamo.finalizarPrestamo();
+        }
+    }
+
+    public void eliminarPrestamo(String nombrePersona) {
+        Prestamo prestamo = obtenerPrestamoActivo(nombrePersona);
+
+        if (prestamo != null) {
+            prestamo.finalizarPrestamo();
+
+            if (prestamo.getPersona() != null) {
+                prestamo.getPersona().eliminarPrestamo(prestamo);
+            }
+
             prestamos.remove(prestamo);
+        }
+    }
+
+    public void agregarAlertaAPrestamo(String nombrePersona, int tiempo, boolean recurrente, String mensaje) {
+        Prestamo prestamo = obtenerPrestamoActivo(nombrePersona);
+
+        if (prestamo != null) {
+            Alerta alerta = new Alerta(tiempo, recurrente, mensaje);
+            prestamo.setAlerta(alerta);
         }
     }
 
@@ -214,6 +344,7 @@ public class Controladora {
         return prestamos;
     }
 
+    // ---------------- REPORTES ----------------
 
     public String generarListadoElementos() {
         String texto = "LISTADO GENERAL\n";
@@ -260,8 +391,12 @@ public class Controladora {
                 for (Prestamo prestamo : persona.getPrestamos()) {
                     texto += "Prestamo: " + prestamo.getFechaPrestamo() + "\n";
 
-                    for (Item item : prestamo.getItems()) {
-                        texto += "- " + item.getNombre() + "\n";
+                    if (prestamo.getItems().isEmpty()) {
+                        texto += "Sin items en el prestamo.\n";
+                    } else {
+                        for (Item item : prestamo.getItems()) {
+                            texto += "- " + item.getNombre() + "\n";
+                        }
                     }
                 }
             }
