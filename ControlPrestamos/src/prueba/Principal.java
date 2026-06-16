@@ -1,13 +1,6 @@
 package prueba;
 
-import java.util.ArrayList;
-
 import control.Controladora;
-import modelo.Alerta;
-import modelo.Categoria;
-import modelo.Item;
-import modelo.Persona;
-import modelo.Tipo;
 
 public class Principal {
 
@@ -15,37 +8,26 @@ public class Principal {
 
         Controladora control = Controladora.getInstancia();
 
-        Tipo libro = new Tipo("Libro");
-        Tipo juego = new Tipo("Juego");
+        control.agregarTipo("Libro");
+        control.agregarTipo("Juego");
 
-        control.agregarTipo(libro);
-        control.agregarTipo(juego);
+        control.agregarCategoria("Estudio");
+        control.agregarCategoria("Entretenimiento");
 
-        Categoria estudio = new Categoria("Estudio");
-        Categoria entretenimiento = new Categoria("Entretenimiento");
+        control.agregarPersona("Jimena", "8888-8888", "jimena@correo.com");
+        control.agregarPersona("April", "7777-7777", "april@correo.com");
 
-        control.agregarCategoria(estudio);
-        control.agregarCategoria(entretenimiento);
+        control.agregarItem("Libro de POO", "Libro para estudiar programacion", "Libro");
+        control.agregarItem("UNO", "Juego de cartas", "Juego");
 
-        Persona persona = new Persona("Jimena", "8888-8888", "jimena@correo.com");
-        control.agregarPersona(persona);
+        control.agregarCategoriaAItem("Libro de POO", "Estudio");
+        control.agregarCategoriaAItem("UNO", "Entretenimiento");
 
-        Item item1 = new Item("Libro de POO", "Libro para estudiar programacion", libro);
-        item1.agregarCategoria(estudio);
+        control.agregarPrestamo("Jimena");
+        control.agregarItemAPrestamo("Jimena", "Libro de POO");
+        control.agregarItemAPrestamo("Jimena", "UNO");
 
-        Item item2 = new Item("UNO", "Juego de cartas", juego);
-        item2.agregarCategoria(entretenimiento);
-
-        control.agregarItem(item1);
-        control.agregarItem(item2);
-
-        ArrayList<Item> itemsPrestamo = new ArrayList<Item>();
-        itemsPrestamo.add(item1);
-        itemsPrestamo.add(item2);
-
-        Alerta alerta = new Alerta(7, false, "Recordar devolver los items");
-
-        control.hacerPrestamo(persona, itemsPrestamo, alerta);
+        control.agregarAlertaAPrestamo("Jimena", 7, false, "Recordar devolver los items");
 
         System.out.println(control.generarListadoElementos());
         System.out.println(control.generarReportePorUsuario());
