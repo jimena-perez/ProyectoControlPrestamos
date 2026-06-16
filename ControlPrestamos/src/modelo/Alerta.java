@@ -8,11 +8,15 @@ public class Alerta {
     private int tiempo;
     private boolean recurrente;
     private String mensaje;
+    private LocalDate fechaInicio;
+    private Prestamo prestamo;
 
     public Alerta(int tiempo, boolean recurrente, String mensaje) {
         this.tiempo = tiempo;
         this.recurrente = recurrente;
         this.mensaje = mensaje;
+        this.fechaInicio = LocalDate.now();
+        this.prestamo = null;
     }
 
     public int getTiempo() {
@@ -39,12 +43,28 @@ public class Alerta {
         this.mensaje = mensaje;
     }
 
-    public boolean debeMostrarse(LocalDate fechaPrestamo) {
-        if (fechaPrestamo == null) {
+    public LocalDate getFechaInicio() {
+        return fechaInicio;
+    }
+
+    public void setFechaInicio(LocalDate fechaInicio) {
+        this.fechaInicio = fechaInicio;
+    }
+
+    public Prestamo getPrestamo() {
+        return prestamo;
+    }
+
+    public void setPrestamo(Prestamo prestamo) {
+        this.prestamo = prestamo;
+    }
+
+    public boolean debeMostrarse() {
+        if (fechaInicio == null) {
             return false;
         }
 
-        long dias = ChronoUnit.DAYS.between(fechaPrestamo, LocalDate.now());
+        long dias = ChronoUnit.DAYS.between(fechaInicio, LocalDate.now());
 
         if (dias < tiempo) {
             return false;
@@ -59,6 +79,6 @@ public class Alerta {
 
     @Override
     public String toString() {
-        return mensaje;
+        return mensaje + " - Fecha inicio: " + fechaInicio;
     }
 }
