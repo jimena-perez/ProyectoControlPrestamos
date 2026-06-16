@@ -16,6 +16,7 @@ public class Prestamo {
         this.items = new ArrayList<Item>();
         this.fechaPrestamo = LocalDate.now();
         this.finalizado = false;
+        this.alerta = null;
 
         if (persona != null) {
             persona.agregarPrestamo(this);
@@ -27,7 +28,15 @@ public class Prestamo {
     }
 
     public void setPersona(Persona persona) {
+        if (this.persona != null) {
+            this.persona.eliminarPrestamo(this);
+        }
+
         this.persona = persona;
+
+        if (persona != null) {
+            persona.agregarPrestamo(this);
+        }
     }
 
     public ArrayList<Item> getItems() {
@@ -72,6 +81,11 @@ public class Prestamo {
 
     public void setAlerta(Alerta alerta) {
         this.alerta = alerta;
+
+        if (alerta != null) {
+            alerta.setPrestamo(this);
+            alerta.setFechaInicio(fechaPrestamo);
+        }
     }
 
     public LocalDate getFechaPrestamo() {
