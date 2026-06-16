@@ -54,50 +54,14 @@ public class Persona {
         prestamos.remove(prestamo);
     }
 
-    public void agregarItem(Item item) {
-        Prestamo prestamoActivo = obtenerPrestamoActivo();
-
-        if (prestamoActivo != null) {
-            prestamoActivo.agregarItem(item);
-        }
-    }
-
-    public void eliminarItem(Item item) {
-        Prestamo prestamoActivo = obtenerPrestamoActivo();
-
-        if (prestamoActivo != null) {
-            prestamoActivo.eliminarItem(item);
-        }
-    }
-
-    public void retornarItem(Item item) {
-        Prestamo prestamoActivo = obtenerPrestamoActivo();
-
-        if (prestamoActivo != null) {
-            prestamoActivo.retornarItem(item);
-        }
-    }
-
-    public void finalizarPrestamo() {
-        Prestamo prestamoActivo = obtenerPrestamoActivo();
-
-        if (prestamoActivo != null) {
-            prestamoActivo.finalizarPrestamo();
-        }
-    }
-
-    public boolean tienePrestamoActivo() {
-        return obtenerPrestamoActivo() != null;
-    }
-
-    private Prestamo obtenerPrestamoActivo() {
+    public boolean tienePrestamosActivos() {
         for (Prestamo prestamo : prestamos) {
             if (!prestamo.isFinalizado()) {
-                return prestamo;
+                return true;
             }
         }
 
-        return null;
+        return false;
     }
 
     @Override
