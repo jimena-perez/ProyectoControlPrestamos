@@ -97,7 +97,8 @@ public class VentanaPrincipal extends JFrame {
 
     private void agregarEventos() {
         btnPersonas.addActionListener(e -> {
-            JOptionPane.showMessageDialog(null, "Aqui se abrira la ventana de personas.");
+            VentanaPersonas ventana = new VentanaPersonas();
+            ventana.setVisible(true);
         });
 
         btnItems.addActionListener(e -> {
