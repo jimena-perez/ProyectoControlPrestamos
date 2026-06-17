@@ -2,6 +2,7 @@ package control;
 
 import java.util.ArrayList;
 
+import Datos.ArchivoDatos;
 import modelo.Alerta;
 import modelo.Categoria;
 import modelo.Item;
@@ -18,6 +19,7 @@ public class Controladora {
     private ArrayList<Item> items;
     private ArrayList<Tipo> tipos;
     private ArrayList<Categoria> categorias;
+    private ArchivoDatos archivoDatos;
 
     private Controladora() {
         personas = new ArrayList<Persona>();
@@ -25,6 +27,7 @@ public class Controladora {
         items = new ArrayList<Item>();
         tipos = new ArrayList<Tipo>();
         categorias = new ArrayList<Categoria>();
+        archivoDatos = new ArchivoDatos();
 
         agregarTipo("Generico");
     }
@@ -465,5 +468,204 @@ public class Controladora {
         }
 
         return texto;
+    }
+
+    // ---------------- ARCHIVOS ----------------
+
+    public void guardarDatos() {
+        guardarPersonas();
+        guardarTipos();
+        guardarCategorias();
+        guardarItems();
+        guardarPrestamos();
+    }
+
+    private void guardarPersonas() {
+        ArrayList<String> lineas = new ArrayList<String>();
+
+        for (Persona persona : personas) {
+            String linea = persona.getNombre() + ";" + persona.getTelefono() + ";" + persona.getCorreo();
+            lineas.add(linea);
+        }
+
+        archivoDatos.guardarLineas("personas.txt", lineas);
+    }
+
+    private void guardarTipos() {
+        ArrayList<String> lineas = new ArrayList<String>();
+
+        for (Tipo tipo : tipos) {
+            lineas.add(tipo.getNombre());
+        }
+
+        archivoDatos.guardarLineas("tipos.txt", lineas);
+    }
+
+    private void guardarCategorias() {
+        ArrayList<String> lineas = new ArrayList<String>();
+
+        for (Categoria categoria : categorias) {
+            lineas.add(categoria.getNombre());
+        }
+
+        archivoDatos.guardarLineas("categorias.txt", lineas);
+    }
+
+    private void guardarItems() {
+        ArrayList<String> lineas = new ArrayList<String>();
+
+        for (Item item : items) {
+            String nombreTipo = "Generico";
+
+            if (item.getTipo() != null) {
+                nombreTipo = item.getTipo().getNombre();
+            }
+
+            String categoriasTexto = "";
+
+            for (int i = 0; i < item.getCategorias().size(); i++) {
+                categoriasTexto += item.getCategorias().get(i).getNombre();
+
+                if (i < item.getCategorias().size() - 1) {
+                    categoriasTexto += ",";
+                }
+            }
+
+            String linea = item.getNombre() + ";" + item.getDescripcion() + ";" + nombreTipo + ";" + categoriasTexto;
+            lineas.add(linea);
+        }
+
+        archivoDatos.guardarLineas("items.txt", lineas);
+    }
+
+    private void guardarPrestamos() {
+        ArrayList<String> lineas = new ArrayList<String>();
+
+        for (Prestamo prestamo : prestamos) {
+            if (!prestamo.isFinalizado() && prestamo.getPersona() != null) {
+                String itemsTexto = "";
+
+                for (int i = 0; i < prestamo.getItems().size(); i++) {
+                    itemsTexto += prestamo.getItems().get(i).getNombre();
+
+                    if (i < prestamo.getItems().size() - 1) {
+                        itemsTexto += ",";
+                    }
+                }
+
+                String alertaTexto = "sinAlerta";
+
+                if (prestamo.getAlerta() != null) {
+                    Alerta alerta = prestamo.getAlerta();
+                    alertaTexto = alerta.getTiempo() + "," + alerta.isRecurrente() + "," + alerta.getMensaje();
+                }
+
+                String linea = prestamo.getPersona().getNombre() + ";" + itemsTexto + ";" + alertaTexto;
+                lineas.add(linea);
+            }
+        }
+
+        archivoDatos.guardarLineas("prestamos.txt", lineas);
+    }
+
+    public void cargarDatos() {
+        personas.clear();
+        prestamos.clear();
+        items.clear();
+        tipos.clear();
+        categorias.clear();
+
+        agregarTipo("Generico");
+
+        cargarTipos();
+        cargarCategorias();
+        cargarPersonas();
+        cargarItems();
+        cargarPrestamos();
+    }
+
+    private void cargarTipos() {
+        ArrayList<String> lineas = archivoDatos.leerLineas("tipos.txt");
+
+        for (String linea : lineas) {
+            if (!linea.equalsIgnoreCase("Generico")) {
+                agregarTipo(linea);
+            }
+        }
+    }
+
+    private void cargarCategorias() {
+        ArrayList<String> lineas = archivoDatos.leerLineas("categorias.txt");
+
+        for (String linea : lineas) {
+            agregarCategoria(linea);
+        }
+    }
+
+    private void cargarPersonas() {
+        ArrayList<String> lineas = archivoDatos.leerLineas("personas.txt");
+
+        for (String linea : lineas) {
+            String[] datos = linea.split(";");
+
+            if (datos.length == 3) {
+                agregarPersona(datos[0], datos[1], datos[2]);
+            }
+        }
+    }
+
+    private void cargarItems() {
+        ArrayList<String> lineas = archivoDatos.leerLineas("items.txt");
+
+        for (String linea : lineas) {
+            String[] datos = linea.split(";");
+
+            if (datos.length >= 3) {
+                agregarItem(datos[0], datos[1], datos[2]);
+
+                if (datos.length == 4 && !datos[3].isEmpty()) {
+                    String[] categoriasItem = datos[3].split(",");
+
+                    for (String nombreCategoria : categoriasItem) {
+                        agregarCategoriaAItem(datos[0], nombreCategoria);
+                    }
+                }
+            }
+        }
+    }
+
+    private void cargarPrestamos() {
+        ArrayList<String> lineas = archivoDatos.leerLineas("prestamos.txt");
+
+        for (String linea : lineas) {
+            String[] datos = linea.split(";");
+
+            if (datos.length >= 2) {
+                String nombrePersona = datos[0];
+                String itemsTexto = datos[1];
+
+                agregarPrestamo(nombrePersona);
+
+                if (!itemsTexto.isEmpty()) {
+                    String[] nombresItems = itemsTexto.split(",");
+
+                    for (String nombreItem : nombresItems) {
+                        agregarItemAPrestamo(nombrePersona, nombreItem);
+                    }
+                }
+
+                if (datos.length == 3 && !datos[2].equals("sinAlerta")) {
+                    String[] datosAlerta = datos[2].split(",");
+
+                    if (datosAlerta.length >= 3) {
+                        int tiempo = Integer.parseInt(datosAlerta[0]);
+                        boolean recurrente = Boolean.parseBoolean(datosAlerta[1]);
+                        String mensaje = datosAlerta[2];
+
+                        agregarAlertaAPrestamo(nombrePersona, tiempo, recurrente, mensaje);
+                    }
+                }
+            }
+        }
     }
 }
