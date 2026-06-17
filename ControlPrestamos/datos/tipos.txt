@@ -1,0 +1,3 @@
+Generico
+Libro
+Juego

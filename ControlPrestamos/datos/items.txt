@@ -1,0 +1,2 @@
+Libro de POO;Libro para estudiar programacion;Libro;Estudio
+UNO;Juego de cartas;Juego;Entretenimiento
