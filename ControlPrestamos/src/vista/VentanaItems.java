@@ -30,6 +30,7 @@ public class VentanaItems extends JFrame {
 
     private Controladora control;
 
+    private JTextField txtCodigo;
     private JTextField txtNombre;
     private JTextField txtDescripcion;
     private JTextField txtTipo;
@@ -48,8 +49,8 @@ public class VentanaItems extends JFrame {
         control = Controladora.getInstancia();
 
         setTitle("Administrar Objetos");
-        setSize(900, 650);
-        setMinimumSize(new Dimension(760, 580));
+        setSize(900, 700);
+        setMinimumSize(new Dimension(760, 620));
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setResizable(true);
@@ -82,7 +83,7 @@ public class VentanaItems extends JFrame {
         ayuda.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         ayuda.setForeground(new Color(130, 80, 100));
 
-        JLabel nota = new JLabel("Ejemplos de objetos: Libro de POO, UNO, CD de música, DVD, juego de mesa.");
+        JLabel nota = new JLabel("El código identifica cada objeto. Ejemplos: LIB001, JUE001, DVD001.");
         nota.setAlignmentX(CENTER_ALIGNMENT);
         nota.setFont(new Font("Segoe UI", Font.ITALIC, 13));
         nota.setForeground(new Color(130, 80, 100));
@@ -92,39 +93,39 @@ public class VentanaItems extends JFrame {
         panelPrincipal.add(ayuda);
         panelPrincipal.add(Box.createRigidArea(new Dimension(0, 5)));
         panelPrincipal.add(nota);
-        panelPrincipal.add(Box.createRigidArea(new Dimension(0, 35)));
+        panelPrincipal.add(Box.createRigidArea(new Dimension(0, 30)));
 
         JPanel panelFormulario = new JPanel();
         panelFormulario.setBackground(rosaFondo);
-        panelFormulario.setLayout(new GridLayout(4, 2, 12, 12));
-        panelFormulario.setMaximumSize(new Dimension(820, 190));
+        panelFormulario.setLayout(new GridLayout(5, 2, 12, 12));
+        panelFormulario.setMaximumSize(new Dimension(820, 235));
 
+        txtCodigo = crearCampo("Ejemplo: LIB001");
         txtNombre = crearCampo("Ejemplo: Libro de POO");
         txtDescripcion = crearCampo("Ejemplo: Libro para estudiar programación");
         txtTipo = crearCampo("Ejemplo: Libro, Juego, CD, DVD");
         txtCategoria = crearCampo("Ejemplo: Estudio, Entretenimiento, Universidad");
 
+        panelFormulario.add(crearEtiqueta("Código del objeto:"));
+        panelFormulario.add(txtCodigo);
         panelFormulario.add(crearEtiqueta("Nombre del objeto:"));
         panelFormulario.add(txtNombre);
-
         panelFormulario.add(crearEtiqueta("Descripción del objeto:"));
         panelFormulario.add(txtDescripcion);
-
         panelFormulario.add(crearEtiqueta("Tipo del objeto:"));
         panelFormulario.add(txtTipo);
-
         panelFormulario.add(crearEtiqueta("Categoría del objeto:"));
         panelFormulario.add(txtCategoria);
 
         panelPrincipal.add(panelFormulario);
-        panelPrincipal.add(Box.createRigidArea(new Dimension(0, 15)));
+        panelPrincipal.add(Box.createRigidArea(new Dimension(0, 18)));
 
         JLabel notaTipo = new JLabel("Tipo: indica qué clase de objeto es. Categoría: ayuda a clasificarlo según su uso.");
         notaTipo.setAlignmentX(CENTER_ALIGNMENT);
         notaTipo.setFont(new Font("Segoe UI", Font.ITALIC, 13));
         notaTipo.setForeground(new Color(130, 80, 100));
 
-        JLabel notaRegistro = new JLabel("Antes de registrar un objeto, se recomienda crear su tipo y categoría en la sección anterior.");
+        JLabel notaRegistro = new JLabel("Para actualizar, eliminar o asignar categoría, puede escribir el código o el nombre exacto del objeto.");
         notaRegistro.setAlignmentX(CENTER_ALIGNMENT);
         notaRegistro.setFont(new Font("Segoe UI", Font.ITALIC, 13));
         notaRegistro.setForeground(new Color(130, 80, 100));
@@ -132,7 +133,7 @@ public class VentanaItems extends JFrame {
         panelPrincipal.add(notaTipo);
         panelPrincipal.add(Box.createRigidArea(new Dimension(0, 5)));
         panelPrincipal.add(notaRegistro);
-        panelPrincipal.add(Box.createRigidArea(new Dimension(0, 35)));
+        panelPrincipal.add(Box.createRigidArea(new Dimension(0, 30)));
 
         JPanel panelBotones = new JPanel();
         panelBotones.setBackground(rosaFondo);
@@ -202,34 +203,44 @@ public class VentanaItems extends JFrame {
     }
 
     private void agregarItem() {
+        String codigo = txtCodigo.getText();
         String nombre = txtNombre.getText();
         String descripcion = txtDescripcion.getText();
         String tipo = txtTipo.getText();
         String categoria = txtCategoria.getText();
 
-        if (nombre.isEmpty() || descripcion.isEmpty() || tipo.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Debe completar nombre, descripción y tipo del objeto.");
+        if (codigo.isEmpty() || nombre.isEmpty() || descripcion.isEmpty() || tipo.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Debe completar código, nombre, descripción y tipo del objeto.");
             return;
         }
 
-        control.agregarItem(nombre, descripcion, tipo);
+        boolean agregado = control.agregarItem(codigo, nombre, descripcion, tipo);
+
+        if (!agregado) {
+            JOptionPane.showMessageDialog(this, "No se pudo registrar. Revise si el código o nombre ya existe.");
+            return;
+        }
 
         if (!categoria.isEmpty()) {
-            control.agregarCategoriaAItem(nombre, categoria);
+            control.agregarCategoriaAItem(codigo, categoria);
         }
 
         JOptionPane.showMessageDialog(this, "Objeto registrado correctamente.");
-
         limpiarCampos();
     }
 
     private void modificarItem() {
-        String nombre = txtNombre.getText();
+        String codigoONombre = txtCodigo.getText();
+
+        if (codigoONombre.isEmpty()) {
+            codigoONombre = txtNombre.getText();
+        }
+
         String descripcion = txtDescripcion.getText();
         String tipo = txtTipo.getText();
 
-        if (nombre.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Debe escribir el nombre del objeto que desea actualizar.");
+        if (codigoONombre.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Debe escribir el código o nombre del objeto que desea actualizar.");
             return;
         }
 
@@ -238,65 +249,93 @@ public class VentanaItems extends JFrame {
             return;
         }
 
-        control.modificarItem(nombre, descripcion, tipo);
+        boolean modificado = control.modificarItem(codigoONombre, descripcion, tipo);
 
-        JOptionPane.showMessageDialog(this, "Objeto actualizado correctamente.");
-
-        limpiarCampos();
+        if (modificado) {
+            JOptionPane.showMessageDialog(this, "Objeto actualizado correctamente.");
+            limpiarCampos();
+        } else {
+            JOptionPane.showMessageDialog(this, "No se encontró el objeto indicado.");
+        }
     }
 
     private void eliminarItem() {
-        String nombre = txtNombre.getText();
+        String codigoONombre = txtCodigo.getText();
 
-        if (nombre.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Debe escribir el nombre del objeto que desea eliminar.");
+        if (codigoONombre.isEmpty()) {
+            codigoONombre = txtNombre.getText();
+        }
+
+        if (codigoONombre.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Debe escribir el código o nombre del objeto que desea eliminar.");
             return;
         }
 
         int respuesta = JOptionPane.showConfirmDialog(
                 this,
-                "¿Seguro que desea eliminar el objeto " + nombre + "?\nNo se eliminará si está prestado.",
+                "¿Seguro que desea eliminar el objeto?\nNo se eliminará si está prestado.",
                 "Confirmar eliminación",
                 JOptionPane.YES_NO_OPTION
         );
 
         if (respuesta == JOptionPane.YES_OPTION) {
-            control.eliminarItem(nombre);
-            JOptionPane.showMessageDialog(this, "Proceso de eliminación realizado.");
-            limpiarCampos();
+            boolean eliminado = control.eliminarItem(codigoONombre);
+
+            if (eliminado) {
+                JOptionPane.showMessageDialog(this, "Objeto eliminado correctamente.");
+                limpiarCampos();
+            } else {
+                JOptionPane.showMessageDialog(this, "No se pudo eliminar. Puede que no exista o que esté prestado.");
+            }
         }
     }
 
     private void agregarCategoriaAItem() {
-        String nombreItem = txtNombre.getText();
+        String codigoONombre = txtCodigo.getText();
+
+        if (codigoONombre.isEmpty()) {
+            codigoONombre = txtNombre.getText();
+        }
+
         String nombreCategoria = txtCategoria.getText();
 
-        if (nombreItem.isEmpty() || nombreCategoria.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Debe escribir el nombre del objeto y la categoría que desea asignar.");
+        if (codigoONombre.isEmpty() || nombreCategoria.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Debe escribir el código o nombre del objeto y la categoría.");
             return;
         }
 
-        control.agregarCategoriaAItem(nombreItem, nombreCategoria);
+        boolean agregado = control.agregarCategoriaAItem(codigoONombre, nombreCategoria);
 
-        JOptionPane.showMessageDialog(this, "Categoría asignada al objeto.");
-
-        limpiarCampos();
+        if (agregado) {
+            JOptionPane.showMessageDialog(this, "Categoría asignada al objeto.");
+            limpiarCampos();
+        } else {
+            JOptionPane.showMessageDialog(this, "No se pudo asignar. Revise que el objeto y la categoría existan.");
+        }
     }
 
     private void eliminarCategoriaDeItem() {
-        String nombreItem = txtNombre.getText();
+        String codigoONombre = txtCodigo.getText();
+
+        if (codigoONombre.isEmpty()) {
+            codigoONombre = txtNombre.getText();
+        }
+
         String nombreCategoria = txtCategoria.getText();
 
-        if (nombreItem.isEmpty() || nombreCategoria.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Debe escribir el nombre del objeto y la categoría que desea quitar.");
+        if (codigoONombre.isEmpty() || nombreCategoria.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Debe escribir el código o nombre del objeto y la categoría.");
             return;
         }
 
-        control.eliminarCategoriaDeItem(nombreItem, nombreCategoria);
+        boolean eliminado = control.eliminarCategoriaDeItem(codigoONombre, nombreCategoria);
 
-        JOptionPane.showMessageDialog(this, "Categoría quitada del objeto.");
-
-        limpiarCampos();
+        if (eliminado) {
+            JOptionPane.showMessageDialog(this, "Categoría quitada del objeto.");
+            limpiarCampos();
+        } else {
+            JOptionPane.showMessageDialog(this, "No se pudo quitar. Revise que el objeto y la categoría existan.");
+        }
     }
 
     private void mostrarItems() {
@@ -312,12 +351,13 @@ public class VentanaItems extends JFrame {
         area.setText(texto);
 
         JScrollPane scroll = new JScrollPane(area);
-        scroll.setPreferredSize(new Dimension(650, 400));
+        scroll.setPreferredSize(new Dimension(700, 420));
 
         JOptionPane.showMessageDialog(this, scroll, "Objetos Registrados", JOptionPane.INFORMATION_MESSAGE);
     }
 
     private void limpiarCampos() {
+        txtCodigo.setText("");
         txtNombre.setText("");
         txtDescripcion.setText("");
         txtTipo.setText("");
