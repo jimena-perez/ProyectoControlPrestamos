@@ -27,6 +27,7 @@ public class VentanaPrincipal extends JFrame {
     private Controladora control;
 
     private BotonRedondo btnPersonas;
+    private BotonRedondo btnTiposCategorias;
     private BotonRedondo btnItems;
     private BotonRedondo btnPrestamos;
     private BotonRedondo btnReportes;
@@ -38,8 +39,8 @@ public class VentanaPrincipal extends JFrame {
         control = Controladora.getInstancia();
 
         setTitle("Control de Prestamos");
-        setSize(650, 700);
-        setMinimumSize(new Dimension(520, 600));
+        setSize(700, 760);
+        setMinimumSize(new Dimension(550, 650));
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(true);
@@ -60,7 +61,7 @@ public class VentanaPrincipal extends JFrame {
         JPanel panelPrincipal = new JPanel();
         panelPrincipal.setBackground(rosaPanel);
         panelPrincipal.setLayout(new BoxLayout(panelPrincipal, BoxLayout.Y_AXIS));
-        panelPrincipal.setBorder(BorderFactory.createEmptyBorder(40, 40, 30, 40));
+        panelPrincipal.setBorder(BorderFactory.createEmptyBorder(35, 40, 30, 40));
 
         JLabel titulo = new JLabel("Sistema de Control de Prestamos");
         titulo.setAlignmentX(CENTER_ALIGNMENT);
@@ -68,9 +69,10 @@ public class VentanaPrincipal extends JFrame {
         titulo.setForeground(textoOscuro);
 
         panelPrincipal.add(titulo);
-        panelPrincipal.add(Box.createRigidArea(new Dimension(0, 45)));
+        panelPrincipal.add(Box.createRigidArea(new Dimension(0, 35)));
 
         btnPersonas = new BotonRedondo("Administrar personas", rosaBoton, rosaBotonHover);
+        btnTiposCategorias = new BotonRedondo("Administrar tipos y categorias", rosaBoton, rosaBotonHover);
         btnItems = new BotonRedondo("Administrar items", rosaBoton, rosaBotonHover);
         btnPrestamos = new BotonRedondo("Administrar prestamos", rosaBoton, rosaBotonHover);
         btnReportes = new BotonRedondo("Ver reportes", rosaBoton, rosaBotonHover);
@@ -79,6 +81,7 @@ public class VentanaPrincipal extends JFrame {
         btnSalir = new BotonRedondo("Salir", new Color(230, 140, 170), new Color(220, 120, 155));
 
         agregarBoton(panelPrincipal, btnPersonas);
+        agregarBoton(panelPrincipal, btnTiposCategorias);
         agregarBoton(panelPrincipal, btnItems);
         agregarBoton(panelPrincipal, btnPrestamos);
         agregarBoton(panelPrincipal, btnReportes);
@@ -92,12 +95,17 @@ public class VentanaPrincipal extends JFrame {
     private void agregarBoton(JPanel panel, JButton boton) {
         boton.setAlignmentX(CENTER_ALIGNMENT);
         panel.add(boton);
-        panel.add(Box.createRigidArea(new Dimension(0, 20)));
+        panel.add(Box.createRigidArea(new Dimension(0, 17)));
     }
 
     private void agregarEventos() {
         btnPersonas.addActionListener(e -> {
             VentanaPersonas ventana = new VentanaPersonas();
+            ventana.setVisible(true);
+        });
+
+        btnTiposCategorias.addActionListener(e -> {
+            VentanaTiposCategorias ventana = new VentanaTiposCategorias();
             ventana.setVisible(true);
         });
 
@@ -146,10 +154,10 @@ public class VentanaPrincipal extends JFrame {
             setContentAreaFilled(false);
             setBorderPainted(false);
             setForeground(new Color(90, 60, 75));
-            setFont(new Font("Segoe UI", Font.BOLD, 17));
+            setFont(new Font("Segoe UI", Font.BOLD, 16));
             setCursor(new Cursor(Cursor.HAND_CURSOR));
-            setPreferredSize(new Dimension(400, 58));
-            setMaximumSize(new Dimension(400, 58));
+            setPreferredSize(new Dimension(420, 55));
+            setMaximumSize(new Dimension(420, 55));
 
             addMouseListener(new java.awt.event.MouseAdapter() {
                 @Override
