@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 public class Item {
 
+    private String codigo;
     private String nombre;
     private String descripcion;
     private boolean prestado;
@@ -11,16 +12,26 @@ public class Item {
     private ArrayList<Categoria> categorias;
     private Prestamo prestamo;
 
-    public Item(String nombre, String descripcion, Tipo tipo) {
+    public Item(String codigo, String nombre, String descripcion, Tipo tipo) {
+        this.codigo = codigo;
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.prestado = false;
         this.categorias = new ArrayList<Categoria>();
-        this.tipo = tipo;
+        this.prestamo = null;
+        setTipo(tipo);
+    }
 
-        if (tipo != null) {
-            tipo.agregarItem(this);
-        }
+    public Item(String nombre, String descripcion, Tipo tipo) {
+        this(nombre, nombre, descripcion, tipo);
+    }
+
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
     }
 
     public String getNombre() {
@@ -52,7 +63,15 @@ public class Item {
     }
 
     public void setTipo(Tipo tipo) {
+        if (this.tipo != null) {
+            this.tipo.eliminarItem(this);
+        }
+
         this.tipo = tipo;
+
+        if (tipo != null) {
+            tipo.agregarItem(this);
+        }
     }
 
     public ArrayList<Categoria> getCategorias() {
@@ -81,10 +100,29 @@ public class Item {
         }
     }
 
+    public String categoriasComoTexto() {
+        if (categorias.isEmpty()) {
+            return "Sin categorias";
+        }
+
+        String texto = "";
+
+        for (int i = 0; i < categorias.size(); i++) {
+            texto += categorias.get(i).getNombre();
+
+            if (i < categorias.size() - 1) {
+                texto += ", ";
+            }
+        }
+
+        return texto;
+    }
+
     @Override
     public String toString() {
         String estado = prestado ? "Prestado" : "Disponible";
+        String nombreTipo = tipo != null ? tipo.getNombre() : "Sin tipo";
 
-        return nombre + " - " + descripcion + " - " + estado;
+        return codigo + " - " + nombre + " - " + descripcion + " - " + nombreTipo + " - " + estado;
     }
 }

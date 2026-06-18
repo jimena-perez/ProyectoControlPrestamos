@@ -1,6 +1,9 @@
 package control;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import Datos.ArchivoDatos;
 import modelo.Alerta;
@@ -42,31 +45,44 @@ public class Controladora {
 
     // ---------------- PERSONAS ----------------
 
-    public void agregarPersona(String nombre, String telefono, String correo) {
-        if (nombre != null && obtenerPersona(nombre) == null) {
+    public boolean agregarPersona(String nombre, String telefono, String correo) {
+        if (nombre != null && !nombre.isEmpty() && obtenerPersona(nombre) == null) {
             Persona persona = new Persona(nombre, telefono, correo);
             personas.add(persona);
+            return true;
         }
+
+        return false;
     }
 
-    public void modificarPersona(String nombre, String nuevoTelefono, String nuevoCorreo) {
+    public boolean modificarPersona(String nombre, String nuevoTelefono, String nuevoCorreo) {
         Persona persona = obtenerPersona(nombre);
 
         if (persona != null) {
             persona.setTelefono(nuevoTelefono);
             persona.setCorreo(nuevoCorreo);
+            return true;
         }
+
+        return false;
     }
 
-    public void eliminarPersona(String nombre) {
+    public boolean eliminarPersona(String nombre) {
         Persona persona = obtenerPersona(nombre);
 
         if (persona != null && !persona.tienePrestamosActivos()) {
             personas.remove(persona);
+            return true;
         }
+
+        return false;
     }
 
     public Persona obtenerPersona(String nombre) {
+        if (nombre == null) {
+            return null;
+        }
+
         for (Persona persona : personas) {
             if (persona.getNombre().equalsIgnoreCase(nombre)) {
                 return persona;
@@ -82,9 +98,13 @@ public class Controladora {
 
     // ---------------- ITEMS ----------------
 
-    public void agregarItem(String nombre, String descripcion, String nombreTipo) {
-        if (nombre == null || obtenerItem(nombre) != null) {
-            return;
+    public boolean agregarItem(String codigo, String nombre, String descripcion, String nombreTipo) {
+        if (codigo == null || codigo.isEmpty() || nombre == null || nombre.isEmpty()) {
+            return false;
+        }
+
+        if (obtenerItem(codigo) != null || obtenerItem(nombre) != null) {
+            return false;
         }
 
         Tipo tipo = obtenerTipo(nombreTipo);
@@ -93,12 +113,17 @@ public class Controladora {
             tipo = obtenerTipo("Generico");
         }
 
-        Item item = new Item(nombre, descripcion, tipo);
+        Item item = new Item(codigo, nombre, descripcion, tipo);
         items.add(item);
+        return true;
     }
 
-    public void modificarItem(String nombre, String nuevaDescripcion, String nuevoTipo) {
-        Item item = obtenerItem(nombre);
+    public boolean agregarItem(String nombre, String descripcion, String nombreTipo) {
+        return agregarItem(nombre, nombre, descripcion, nombreTipo);
+    }
+
+    public boolean modificarItem(String codigoONombre, String nuevaDescripcion, String nuevoTipo) {
+        Item item = obtenerItem(codigoONombre);
 
         if (item != null) {
             item.setDescripcion(nuevaDescripcion);
@@ -108,11 +133,15 @@ public class Controladora {
             if (tipo != null) {
                 item.setTipo(tipo);
             }
+
+            return true;
         }
+
+        return false;
     }
 
-    public void eliminarItem(String nombre) {
-        Item item = obtenerItem(nombre);
+    public boolean eliminarItem(String codigoONombre) {
+        Item item = obtenerItem(codigoONombre);
 
         if (item != null && !item.isPrestado()) {
             if (item.getTipo() != null) {
@@ -126,12 +155,19 @@ public class Controladora {
             }
 
             items.remove(item);
+            return true;
         }
+
+        return false;
     }
 
-    public Item obtenerItem(String nombre) {
+    public Item obtenerItem(String codigoONombre) {
+        if (codigoONombre == null) {
+            return null;
+        }
+
         for (Item item : items) {
-            if (item.getNombre().equalsIgnoreCase(nombre)) {
+            if (item.getCodigo().equalsIgnoreCase(codigoONombre) || item.getNombre().equalsIgnoreCase(codigoONombre)) {
                 return item;
             }
         }
@@ -143,50 +179,62 @@ public class Controladora {
         return items;
     }
 
-    public void agregarCategoriaAItem(String nombreItem, String nombreCategoria) {
-        Item item = obtenerItem(nombreItem);
+    public boolean agregarCategoriaAItem(String codigoONombreItem, String nombreCategoria) {
+        Item item = obtenerItem(codigoONombreItem);
         Categoria categoria = obtenerCategoria(nombreCategoria);
 
         if (item != null && categoria != null) {
             item.agregarCategoria(categoria);
+            return true;
         }
+
+        return false;
     }
 
-    public void eliminarCategoriaDeItem(String nombreItem, String nombreCategoria) {
-        Item item = obtenerItem(nombreItem);
+    public boolean eliminarCategoriaDeItem(String codigoONombreItem, String nombreCategoria) {
+        Item item = obtenerItem(codigoONombreItem);
         Categoria categoria = obtenerCategoria(nombreCategoria);
 
         if (item != null && categoria != null) {
             item.eliminarCategoria(categoria);
+            return true;
         }
+
+        return false;
     }
 
     // ---------------- TIPOS ----------------
 
-    public void agregarTipo(String nombre) {
-        if (nombre != null && obtenerTipo(nombre) == null) {
+    public boolean agregarTipo(String nombre) {
+        if (nombre != null && !nombre.isEmpty() && obtenerTipo(nombre) == null) {
             Tipo tipo = new Tipo(nombre);
             tipos.add(tipo);
+            return true;
         }
+
+        return false;
     }
 
-    public void modificarTipo(String nombreActual, String nuevoNombre) {
+    public boolean modificarTipo(String nombreActual, String nuevoNombre) {
         Tipo tipo = obtenerTipo(nombreActual);
 
-        if (tipo != null) {
+        if (tipo != null && nuevoNombre != null && !nuevoNombre.isEmpty()) {
             tipo.setNombre(nuevoNombre);
+            return true;
         }
+
+        return false;
     }
 
-    public void eliminarTipo(String nombre) {
+    public boolean eliminarTipo(String nombre) {
         Tipo tipo = obtenerTipo(nombre);
 
         if (tipo == null) {
-            return;
+            return false;
         }
 
         if (tipo.getNombre().equalsIgnoreCase("Generico")) {
-            return;
+            return false;
         }
 
         Tipo generico = obtenerTipo("Generico");
@@ -197,9 +245,14 @@ public class Controladora {
         }
 
         tipos.remove(tipo);
+        return true;
     }
 
     public Tipo obtenerTipo(String nombre) {
+        if (nombre == null) {
+            return null;
+        }
+
         for (Tipo tipo : tipos) {
             if (tipo.getNombre().equalsIgnoreCase(nombre)) {
                 return tipo;
@@ -215,22 +268,28 @@ public class Controladora {
 
     // ---------------- CATEGORIAS ----------------
 
-    public void agregarCategoria(String nombre) {
-        if (nombre != null && obtenerCategoria(nombre) == null) {
+    public boolean agregarCategoria(String nombre) {
+        if (nombre != null && !nombre.isEmpty() && obtenerCategoria(nombre) == null) {
             Categoria categoria = new Categoria(nombre);
             categorias.add(categoria);
+            return true;
         }
+
+        return false;
     }
 
-    public void modificarCategoria(String nombreActual, String nuevoNombre) {
+    public boolean modificarCategoria(String nombreActual, String nuevoNombre) {
         Categoria categoria = obtenerCategoria(nombreActual);
 
-        if (categoria != null) {
+        if (categoria != null && nuevoNombre != null && !nuevoNombre.isEmpty()) {
             categoria.setNombre(nuevoNombre);
+            return true;
         }
+
+        return false;
     }
 
-    public void eliminarCategoria(String nombre) {
+    public boolean eliminarCategoria(String nombre) {
         Categoria categoria = obtenerCategoria(nombre);
 
         if (categoria != null) {
@@ -241,10 +300,17 @@ public class Controladora {
             }
 
             categorias.remove(categoria);
+            return true;
         }
+
+        return false;
     }
 
     public Categoria obtenerCategoria(String nombre) {
+        if (nombre == null) {
+            return null;
+        }
+
         for (Categoria categoria : categorias) {
             if (categoria.getNombre().equalsIgnoreCase(nombre)) {
                 return categoria;
@@ -260,13 +326,35 @@ public class Controladora {
 
     // ---------------- PRESTAMOS ----------------
 
-    public void agregarPrestamo(String nombrePersona) {
+    public boolean crearPrestamoConItem(String nombrePersona, String codigoONombreItem) {
         Persona persona = obtenerPersona(nombrePersona);
+        Item item = obtenerItem(codigoONombreItem);
 
-        if (persona != null) {
-            Prestamo prestamo = new Prestamo(persona);
+        if (persona == null || item == null || item.isPrestado()) {
+            return false;
+        }
+
+        Prestamo prestamo = obtenerPrestamoActivo(nombrePersona);
+
+        if (prestamo == null) {
+            prestamo = new Prestamo(persona);
             prestamos.add(prestamo);
         }
+
+        prestamo.agregarItem(item);
+        return true;
+    }
+
+    public boolean agregarPrestamo(String nombrePersona) {
+        Persona persona = obtenerPersona(nombrePersona);
+
+        if (persona != null && obtenerPrestamoActivo(nombrePersona) == null) {
+            Prestamo prestamo = new Prestamo(persona);
+            prestamos.add(prestamo);
+            return true;
+        }
+
+        return false;
     }
 
     public Prestamo obtenerPrestamoActivo(String nombrePersona) {
@@ -285,42 +373,54 @@ public class Controladora {
         return null;
     }
 
-    public void agregarItemAPrestamo(String nombrePersona, String nombreItem) {
+    public boolean agregarItemAPrestamo(String nombrePersona, String codigoONombreItem) {
         Prestamo prestamo = obtenerPrestamoActivo(nombrePersona);
-        Item item = obtenerItem(nombreItem);
+        Item item = obtenerItem(codigoONombreItem);
 
-        if (prestamo != null && item != null) {
+        if (prestamo != null && item != null && !item.isPrestado()) {
             prestamo.agregarItem(item);
+            return true;
         }
+
+        return false;
     }
 
-    public void eliminarItemDePrestamo(String nombrePersona, String nombreItem) {
+    public boolean eliminarItemDePrestamo(String nombrePersona, String codigoONombreItem) {
         Prestamo prestamo = obtenerPrestamoActivo(nombrePersona);
-        Item item = obtenerItem(nombreItem);
+        Item item = obtenerItem(codigoONombreItem);
 
         if (prestamo != null && item != null) {
             prestamo.eliminarItem(item);
+            return true;
         }
+
+        return false;
     }
 
-    public void retornarItemDePrestamo(String nombrePersona, String nombreItem) {
+    public boolean retornarItemDePrestamo(String nombrePersona, String codigoONombreItem) {
         Prestamo prestamo = obtenerPrestamoActivo(nombrePersona);
-        Item item = obtenerItem(nombreItem);
+        Item item = obtenerItem(codigoONombreItem);
 
         if (prestamo != null && item != null) {
             prestamo.retornarItem(item);
+            return true;
         }
+
+        return false;
     }
 
-    public void finalizarPrestamo(String nombrePersona) {
+    public boolean finalizarPrestamo(String nombrePersona) {
         Prestamo prestamo = obtenerPrestamoActivo(nombrePersona);
 
         if (prestamo != null) {
             prestamo.finalizarPrestamo();
+            return true;
         }
+
+        return false;
     }
 
-    public void eliminarPrestamo(String nombrePersona) {
+    public boolean eliminarPrestamo(String nombrePersona) {
         Prestamo prestamo = obtenerPrestamoActivo(nombrePersona);
 
         if (prestamo != null) {
@@ -331,20 +431,40 @@ public class Controladora {
             }
 
             prestamos.remove(prestamo);
+            return true;
         }
+
+        return false;
     }
 
-    public void agregarAlertaAPrestamo(String nombrePersona, int tiempo, boolean recurrente, String mensaje) {
+    public boolean agregarAlertaAPrestamo(String nombrePersona, int tiempo, boolean recurrente, String mensaje) {
         Prestamo prestamo = obtenerPrestamoActivo(nombrePersona);
 
-        if (prestamo != null) {
-            Alerta alerta = new Alerta(tiempo, recurrente, mensaje);
+        if (prestamo != null && tiempo > 0 && mensaje != null && !mensaje.isEmpty()) {
+            Alerta alerta = new Alerta(tiempo, recurrente, mensaje, prestamo.getFechaPrestamo());
             prestamo.setAlerta(alerta);
+            return true;
         }
+
+        return false;
     }
 
     public ArrayList<Prestamo> obtenerListadoPrestamos() {
         return prestamos;
+    }
+
+    public String revisarAlertas() {
+        String texto = "";
+
+        for (Prestamo prestamo : prestamos) {
+            if (!prestamo.isFinalizado() && prestamo.getAlerta() != null && prestamo.getAlerta().debeMostrarse()) {
+                texto += "Persona: " + prestamo.getPersona().getNombre() + "\n";
+                texto += "Mensaje: " + prestamo.getAlerta().getMensaje() + "\n";
+                texto += "Fecha del préstamo: " + prestamo.getFechaPrestamo() + "\n\n";
+            }
+        }
+
+        return texto;
     }
 
     // ---------------- REPORTES ----------------
@@ -360,7 +480,7 @@ public class Controladora {
 
         texto += "\nItems:\n";
         for (Item item : items) {
-            texto += "- " + item + "\n";
+            texto += "- " + item + " | Categorias: " + item.categoriasComoTexto() + "\n";
         }
 
         texto += "\nTipos:\n";
@@ -394,11 +514,15 @@ public class Controladora {
                 for (Prestamo prestamo : persona.getPrestamos()) {
                     texto += "Prestamo: " + prestamo.getFechaPrestamo() + "\n";
 
+                    if (prestamo.getAlerta() != null) {
+                        texto += "Alerta: " + prestamo.getAlerta() + "\n";
+                    }
+
                     if (prestamo.getItems().isEmpty()) {
                         texto += "Sin items en el prestamo.\n";
                     } else {
                         for (Item item : prestamo.getItems()) {
-                            texto += "- " + item.getNombre() + "\n";
+                            texto += "- " + item.getCodigo() + " | " + item.getNombre() + "\n";
                         }
                     }
                 }
@@ -412,9 +536,20 @@ public class Controladora {
         String texto = "REPORTE POR ITEM\n";
         texto += "-------------------------\n";
 
-        for (Item item : items) {
-            texto += "\nItem: " + item.getNombre() + "\n";
+        ArrayList<Item> copiaItems = new ArrayList<Item>(items);
+
+        Collections.sort(copiaItems, new Comparator<Item>() {
+            public int compare(Item item1, Item item2) {
+                return item1.getNombre().compareToIgnoreCase(item2.getNombre());
+            }
+        });
+
+        for (Item item : copiaItems) {
+            texto += "\nCódigo: " + item.getCodigo() + "\n";
+            texto += "Item: " + item.getNombre() + "\n";
             texto += "Descripcion: " + item.getDescripcion() + "\n";
+            texto += "Tipo: " + (item.getTipo() != null ? item.getTipo().getNombre() : "Sin tipo") + "\n";
+            texto += "Categorias: " + item.categoriasComoTexto() + "\n";
             texto += "Estado: ";
 
             if (item.isPrestado()) {
@@ -443,7 +578,7 @@ public class Controladora {
                 texto += "Sin items asignados.\n";
             } else {
                 for (Item item : categoria.getItems()) {
-                    texto += "- " + item.getNombre() + "\n";
+                    texto += "- " + item.getCodigo() + " | " + item.getNombre() + "\n";
                 }
             }
         }
@@ -462,7 +597,7 @@ public class Controladora {
                 texto += "Sin items asignados.\n";
             } else {
                 for (Item item : tipo.getItems()) {
-                    texto += "- " + item.getNombre() + "\n";
+                    texto += "- " + item.getCodigo() + " | " + item.getNombre() + "\n";
                 }
             }
         }
@@ -531,7 +666,7 @@ public class Controladora {
                 }
             }
 
-            String linea = item.getNombre() + ";" + item.getDescripcion() + ";" + nombreTipo + ";" + categoriasTexto;
+            String linea = item.getCodigo() + ";" + item.getNombre() + ";" + item.getDescripcion() + ";" + nombreTipo + ";" + categoriasTexto;
             lineas.add(linea);
         }
 
@@ -546,21 +681,34 @@ public class Controladora {
                 String itemsTexto = "";
 
                 for (int i = 0; i < prestamo.getItems().size(); i++) {
-                    itemsTexto += prestamo.getItems().get(i).getNombre();
+                    itemsTexto += prestamo.getItems().get(i).getCodigo();
 
                     if (i < prestamo.getItems().size() - 1) {
                         itemsTexto += ",";
                     }
                 }
 
-                String alertaTexto = "sinAlerta";
+                String alertaTiempo = "";
+                String alertaRecurrente = "";
+                String alertaMensaje = "";
+                String alertaFecha = "";
 
                 if (prestamo.getAlerta() != null) {
                     Alerta alerta = prestamo.getAlerta();
-                    alertaTexto = alerta.getTiempo() + "," + alerta.isRecurrente() + "," + alerta.getMensaje();
+                    alertaTiempo = String.valueOf(alerta.getTiempo());
+                    alertaRecurrente = String.valueOf(alerta.isRecurrente());
+                    alertaMensaje = alerta.getMensaje().replace(";", ",");
+                    alertaFecha = String.valueOf(alerta.getFechaInicio());
                 }
 
-                String linea = prestamo.getPersona().getNombre() + ";" + itemsTexto + ";" + alertaTexto;
+                String linea = prestamo.getPersona().getNombre() + ";"
+                        + prestamo.getFechaPrestamo() + ";"
+                        + itemsTexto + ";"
+                        + alertaTiempo + ";"
+                        + alertaRecurrente + ";"
+                        + alertaMensaje + ";"
+                        + alertaFecha;
+
                 lineas.add(linea);
             }
         }
@@ -606,7 +754,7 @@ public class Controladora {
         ArrayList<String> lineas = archivoDatos.leerLineas("personas.txt");
 
         for (String linea : lineas) {
-            String[] datos = linea.split(";");
+            String[] datos = linea.split(";", -1);
 
             if (datos.length == 3) {
                 agregarPersona(datos[0], datos[1], datos[2]);
@@ -618,16 +766,21 @@ public class Controladora {
         ArrayList<String> lineas = archivoDatos.leerLineas("items.txt");
 
         for (String linea : lineas) {
-            String[] datos = linea.split(";");
+            String[] datos = linea.split(";", -1);
 
-            if (datos.length >= 3) {
-                agregarItem(datos[0], datos[1], datos[2]);
+            if (datos.length >= 4) {
+                String codigo = datos[0];
+                String nombre = datos[1];
+                String descripcion = datos[2];
+                String tipo = datos[3];
 
-                if (datos.length == 4 && !datos[3].isEmpty()) {
-                    String[] categoriasItem = datos[3].split(",");
+                agregarItem(codigo, nombre, descripcion, tipo);
+
+                if (datos.length >= 5 && !datos[4].isEmpty()) {
+                    String[] categoriasItem = datos[4].split(",");
 
                     for (String nombreCategoria : categoriasItem) {
-                        agregarCategoriaAItem(datos[0], nombreCategoria);
+                        agregarCategoriaAItem(codigo, nombreCategoria);
                     }
                 }
             }
@@ -638,32 +791,41 @@ public class Controladora {
         ArrayList<String> lineas = archivoDatos.leerLineas("prestamos.txt");
 
         for (String linea : lineas) {
-            String[] datos = linea.split(";");
+            String[] datos = linea.split(";", -1);
 
-            if (datos.length >= 2) {
+            if (datos.length >= 3) {
                 String nombrePersona = datos[0];
-                String itemsTexto = datos[1];
+                LocalDate fechaPrestamo = LocalDate.parse(datos[1]);
+                String itemsTexto = datos[2];
 
-                agregarPrestamo(nombrePersona);
+                Persona persona = obtenerPersona(nombrePersona);
 
-                if (!itemsTexto.isEmpty()) {
-                    String[] nombresItems = itemsTexto.split(",");
+                if (persona != null) {
+                    Prestamo prestamo = new Prestamo(persona, fechaPrestamo);
 
-                    for (String nombreItem : nombresItems) {
-                        agregarItemAPrestamo(nombrePersona, nombreItem);
+                    if (!itemsTexto.isEmpty()) {
+                        String[] codigosItems = itemsTexto.split(",");
+
+                        for (String codigoItem : codigosItems) {
+                            Item item = obtenerItem(codigoItem);
+
+                            if (item != null && !item.isPrestado()) {
+                                prestamo.agregarItem(item);
+                            }
+                        }
                     }
-                }
 
-                if (datos.length == 3 && !datos[2].equals("sinAlerta")) {
-                    String[] datosAlerta = datos[2].split(",");
+                    if (datos.length >= 7 && !datos[3].isEmpty()) {
+                        int tiempo = Integer.parseInt(datos[3]);
+                        boolean recurrente = Boolean.parseBoolean(datos[4]);
+                        String mensaje = datos[5];
+                        LocalDate fechaAlerta = LocalDate.parse(datos[6]);
 
-                    if (datosAlerta.length >= 3) {
-                        int tiempo = Integer.parseInt(datosAlerta[0]);
-                        boolean recurrente = Boolean.parseBoolean(datosAlerta[1]);
-                        String mensaje = datosAlerta[2];
-
-                        agregarAlertaAPrestamo(nombrePersona, tiempo, recurrente, mensaje);
+                        Alerta alerta = new Alerta(tiempo, recurrente, mensaje, fechaAlerta);
+                        prestamo.setAlerta(alerta);
                     }
+
+                    prestamos.add(prestamo);
                 }
             }
         }

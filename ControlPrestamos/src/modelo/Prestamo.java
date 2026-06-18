@@ -12,9 +12,13 @@ public class Prestamo {
     private boolean finalizado;
 
     public Prestamo(Persona persona) {
+        this(persona, LocalDate.now());
+    }
+
+    public Prestamo(Persona persona, LocalDate fechaPrestamo) {
         this.persona = persona;
         this.items = new ArrayList<Item>();
-        this.fechaPrestamo = LocalDate.now();
+        this.fechaPrestamo = fechaPrestamo;
         this.finalizado = false;
         this.alerta = null;
 
@@ -44,7 +48,7 @@ public class Prestamo {
     }
 
     public void agregarItem(Item item) {
-        if (item != null && !item.isPrestado() && !finalizado) {
+        if (item != null && !item.isPrestado() && !finalizado && !items.contains(item)) {
             items.add(item);
             item.setPrestado(true);
             item.setPrestamo(this);
@@ -84,12 +88,19 @@ public class Prestamo {
 
         if (alerta != null) {
             alerta.setPrestamo(this);
-            alerta.setFechaInicio(fechaPrestamo);
+
+            if (alerta.getFechaInicio() == null) {
+                alerta.setFechaInicio(fechaPrestamo);
+            }
         }
     }
 
     public LocalDate getFechaPrestamo() {
         return fechaPrestamo;
+    }
+
+    public void setFechaPrestamo(LocalDate fechaPrestamo) {
+        this.fechaPrestamo = fechaPrestamo;
     }
 
     public boolean isFinalizado() {
@@ -104,11 +115,7 @@ public class Prestamo {
             nombrePersona = persona.getNombre();
         }
 
-        String estado = "Activo";
-
-        if (finalizado) {
-            estado = "Finalizado";
-        }
+        String estado = finalizado ? "Finalizado" : "Activo";
 
         return "Prestamo de " + nombrePersona + " - " + fechaPrestamo + " - " + estado;
     }
