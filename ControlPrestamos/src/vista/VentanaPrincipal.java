@@ -110,7 +110,8 @@ public class VentanaPrincipal extends JFrame {
         });
 
         btnItems.addActionListener(e -> {
-            JOptionPane.showMessageDialog(null, "Aqui se abrira la ventana de items.");
+            VentanaItems ventana = new VentanaItems();
+            ventana.setVisible(true);
         });
 
         btnPrestamos.addActionListener(e -> {
