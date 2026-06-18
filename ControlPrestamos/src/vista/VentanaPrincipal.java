@@ -120,7 +120,8 @@ public class VentanaPrincipal extends JFrame {
         });
 
         btnReportes.addActionListener(e -> {
-            JOptionPane.showMessageDialog(null, control.generarListadoElementos());
+            VentanaReportes ventana = new VentanaReportes();
+            ventana.setVisible(true);
         });
 
         btnGuardar.addActionListener(e -> {
