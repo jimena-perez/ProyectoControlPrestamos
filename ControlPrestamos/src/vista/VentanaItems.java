@@ -108,12 +108,16 @@ public class VentanaItems extends JFrame {
 
         panelFormulario.add(crearEtiqueta("Código del objeto:"));
         panelFormulario.add(txtCodigo);
+
         panelFormulario.add(crearEtiqueta("Nombre del objeto:"));
         panelFormulario.add(txtNombre);
+
         panelFormulario.add(crearEtiqueta("Descripción del objeto:"));
         panelFormulario.add(txtDescripcion);
+
         panelFormulario.add(crearEtiqueta("Tipo del objeto:"));
         panelFormulario.add(txtTipo);
+
         panelFormulario.add(crearEtiqueta("Categoría del objeto:"));
         panelFormulario.add(txtCategoria);
 
