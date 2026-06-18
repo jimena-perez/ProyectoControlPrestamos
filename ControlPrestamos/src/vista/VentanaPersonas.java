@@ -46,8 +46,8 @@ public class VentanaPersonas extends JFrame {
         control = Controladora.getInstancia();
 
         setTitle("Administrar Personas");
-        setSize(700, 600);
-        setMinimumSize(new Dimension(600, 520));
+        setSize(780, 680);
+        setMinimumSize(new Dimension(680, 600));
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setResizable(true);
@@ -75,27 +75,37 @@ public class VentanaPersonas extends JFrame {
         titulo.setFont(new Font("Segoe UI", Font.BOLD, 28));
         titulo.setForeground(textoOscuro);
 
+        JLabel ayuda = new JLabel("Registre a las personas que pueden recibir objetos en préstamo.");
+        ayuda.setAlignmentX(CENTER_ALIGNMENT);
+        ayuda.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        ayuda.setForeground(new Color(130, 80, 100));
+
+        JLabel nota = new JLabel("El nombre se usa para buscar, modificar, eliminar o asignar préstamos.");
+        nota.setAlignmentX(CENTER_ALIGNMENT);
+        nota.setFont(new Font("Segoe UI", Font.ITALIC, 13));
+        nota.setForeground(new Color(130, 80, 100));
+
         panelPrincipal.add(titulo);
+        panelPrincipal.add(Box.createRigidArea(new Dimension(0, 8)));
+        panelPrincipal.add(ayuda);
+        panelPrincipal.add(Box.createRigidArea(new Dimension(0, 5)));
+        panelPrincipal.add(nota);
         panelPrincipal.add(Box.createRigidArea(new Dimension(0, 25)));
 
         JPanel panelFormulario = new JPanel();
         panelFormulario.setBackground(rosaFondo);
         panelFormulario.setLayout(new GridLayout(3, 2, 12, 12));
-        panelFormulario.setMaximumSize(new Dimension(600, 130));
+        panelFormulario.setMaximumSize(new Dimension(700, 145));
 
-        JLabel lblNombre = crearEtiqueta("Nombre:");
-        JLabel lblTelefono = crearEtiqueta("Teléfono:");
-        JLabel lblCorreo = crearEtiqueta("Correo:");
+        txtNombre = crearCampo("Ejemplo: Jimena");
+        txtTelefono = crearCampo("Ejemplo: 8888-8888");
+        txtCorreo = crearCampo("Ejemplo: jimena@correo.com");
 
-        txtNombre = crearCampo();
-        txtTelefono = crearCampo();
-        txtCorreo = crearCampo();
-
-        panelFormulario.add(lblNombre);
+        panelFormulario.add(crearEtiqueta("Nombre de la persona:"));
         panelFormulario.add(txtNombre);
-        panelFormulario.add(lblTelefono);
+        panelFormulario.add(crearEtiqueta("Teléfono:"));
         panelFormulario.add(txtTelefono);
-        panelFormulario.add(lblCorreo);
+        panelFormulario.add(crearEtiqueta("Correo electrónico:"));
         panelFormulario.add(txtCorreo);
 
         panelPrincipal.add(panelFormulario);
@@ -104,13 +114,13 @@ public class VentanaPersonas extends JFrame {
         JPanel panelBotones = new JPanel();
         panelBotones.setBackground(rosaFondo);
         panelBotones.setLayout(new GridLayout(2, 3, 12, 12));
-        panelBotones.setMaximumSize(new Dimension(600, 120));
+        panelBotones.setMaximumSize(new Dimension(700, 125));
 
-        btnAgregar = new BotonRedondo("Agregar", rosaBoton, rosaHover);
-        btnModificar = new BotonRedondo("Modificar", rosaBoton, rosaHover);
-        btnEliminar = new BotonRedondo("Eliminar", rosaBoton, rosaHover);
-        btnConsultar = new BotonRedondo("Consultar", rosaBoton, rosaHover);
-        btnLimpiar = new BotonRedondo("Limpiar", rosaBoton, rosaHover);
+        btnAgregar = new BotonRedondo("Registrar persona", rosaBoton, rosaHover);
+        btnModificar = new BotonRedondo("Actualizar datos", rosaBoton, rosaHover);
+        btnEliminar = new BotonRedondo("Eliminar persona", rosaBoton, rosaHover);
+        btnConsultar = new BotonRedondo("Ver personas", rosaBoton, rosaHover);
+        btnLimpiar = new BotonRedondo("Limpiar campos", rosaBoton, rosaHover);
         btnCerrar = new BotonRedondo("Cerrar", new Color(230, 140, 170), new Color(220, 120, 155));
 
         panelBotones.add(btnAgregar);
@@ -121,21 +131,30 @@ public class VentanaPersonas extends JFrame {
         panelBotones.add(btnCerrar);
 
         panelPrincipal.add(panelBotones);
-        panelPrincipal.add(Box.createRigidArea(new Dimension(0, 25)));
+        panelPrincipal.add(Box.createRigidArea(new Dimension(0, 20)));
+
+        JLabel explicacion = new JLabel("La información registrada aparecerá en el cuadro inferior.");
+        explicacion.setAlignmentX(CENTER_ALIGNMENT);
+        explicacion.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        explicacion.setForeground(new Color(130, 80, 100));
+
+        panelPrincipal.add(explicacion);
+        panelPrincipal.add(Box.createRigidArea(new Dimension(0, 10)));
 
         areaPersonas = new JTextArea();
         areaPersonas.setEditable(false);
         areaPersonas.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         areaPersonas.setForeground(textoOscuro);
         areaPersonas.setBackground(new Color(255, 245, 248));
-        areaPersonas.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        areaPersonas.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
+        areaPersonas.setText("Aquí se mostrarán las personas registradas y sus préstamos.\n\n"
+                + "Para modificar o eliminar una persona, escriba su nombre exactamente como fue registrado.");
 
         JScrollPane scroll = new JScrollPane(areaPersonas);
         scroll.setBorder(BorderFactory.createLineBorder(new Color(230, 170, 190), 1));
-        scroll.setPreferredSize(new Dimension(600, 230));
+        scroll.setPreferredSize(new Dimension(700, 280));
 
         panelPrincipal.add(scroll);
-
         add(panelPrincipal, BorderLayout.CENTER);
     }
 
@@ -146,11 +165,12 @@ public class VentanaPersonas extends JFrame {
         return etiqueta;
     }
 
-    private JTextField crearCampo() {
+    private JTextField crearCampo(String ayuda) {
         JTextField campo = new JTextField();
         campo.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         campo.setForeground(new Color(90, 60, 75));
         campo.setBackground(new Color(255, 245, 248));
+        campo.setToolTipText(ayuda);
         campo.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(230, 170, 190), 1),
                 BorderFactory.createEmptyBorder(6, 8, 6, 8)
@@ -173,13 +193,12 @@ public class VentanaPersonas extends JFrame {
         String correo = txtCorreo.getText();
 
         if (nombre.isEmpty() || telefono.isEmpty() || correo.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Debe completar todos los campos.");
+            JOptionPane.showMessageDialog(this, "Debe completar nombre, teléfono y correo.");
             return;
         }
 
         control.agregarPersona(nombre, telefono, correo);
-        JOptionPane.showMessageDialog(this, "Persona agregada correctamente.");
-
+        JOptionPane.showMessageDialog(this, "Persona registrada correctamente.");
         limpiarCampos();
         mostrarPersonas();
     }
@@ -190,7 +209,7 @@ public class VentanaPersonas extends JFrame {
         String correo = txtCorreo.getText();
 
         if (nombre.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Debe escribir el nombre de la persona a modificar.");
+            JOptionPane.showMessageDialog(this, "Debe escribir el nombre de la persona que desea actualizar.");
             return;
         }
 
@@ -200,8 +219,7 @@ public class VentanaPersonas extends JFrame {
         }
 
         control.modificarPersona(nombre, telefono, correo);
-        JOptionPane.showMessageDialog(this, "Persona modificada correctamente.");
-
+        JOptionPane.showMessageDialog(this, "Datos actualizados correctamente.");
         limpiarCampos();
         mostrarPersonas();
     }
@@ -210,13 +228,13 @@ public class VentanaPersonas extends JFrame {
         String nombre = txtNombre.getText();
 
         if (nombre.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Debe escribir el nombre de la persona a eliminar.");
+            JOptionPane.showMessageDialog(this, "Debe escribir el nombre de la persona que desea eliminar.");
             return;
         }
 
         int respuesta = JOptionPane.showConfirmDialog(
                 this,
-                "¿Seguro que desea eliminar a " + nombre + "?",
+                "¿Seguro que desea eliminar a " + nombre + "?\nNo se eliminará si tiene préstamos activos.",
                 "Confirmar eliminación",
                 JOptionPane.YES_NO_OPTION
         );
@@ -230,7 +248,10 @@ public class VentanaPersonas extends JFrame {
     }
 
     private void mostrarPersonas() {
-        areaPersonas.setText(control.generarReportePorUsuario());
+        String texto = "PERSONAS REGISTRADAS\n";
+        texto += "-----------------------------\n\n";
+        texto += control.generarReportePorUsuario();
+        areaPersonas.setText(texto);
     }
 
     private void limpiarCampos() {
@@ -242,7 +263,6 @@ public class VentanaPersonas extends JFrame {
     class BotonRedondo extends JButton {
 
         private static final long serialVersionUID = 1L;
-
         private Color colorNormal;
         private Color colorHover;
         private boolean mouseEncima;
@@ -257,17 +277,15 @@ public class VentanaPersonas extends JFrame {
             setContentAreaFilled(false);
             setBorderPainted(false);
             setForeground(new Color(90, 60, 75));
-            setFont(new Font("Segoe UI", Font.BOLD, 14));
+            setFont(new Font("Segoe UI", Font.BOLD, 13));
             setCursor(new Cursor(Cursor.HAND_CURSOR));
 
             addMouseListener(new java.awt.event.MouseAdapter() {
-                @Override
                 public void mouseEntered(java.awt.event.MouseEvent evt) {
                     mouseEncima = true;
                     repaint();
                 }
 
-                @Override
                 public void mouseExited(java.awt.event.MouseEvent evt) {
                     mouseEncima = false;
                     repaint();
@@ -275,24 +293,14 @@ public class VentanaPersonas extends JFrame {
             });
         }
 
-        @Override
         protected void paintComponent(Graphics g) {
             Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-            if (mouseEncima) {
-                g2.setColor(colorHover);
-            } else {
-                g2.setColor(colorNormal);
-            }
-
+            g2.setColor(mouseEncima ? colorHover : colorNormal);
             g2.fillRoundRect(0, 0, getWidth(), getHeight(), 35, 35);
-
             g2.setColor(new Color(255, 255, 255, 180));
             g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 35, 35);
-
             g2.dispose();
-
             super.paintComponent(g);
         }
     }
