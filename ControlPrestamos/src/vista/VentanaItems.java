@@ -35,8 +35,6 @@ public class VentanaItems extends JFrame {
     private JTextField txtTipo;
     private JTextField txtCategoria;
 
-    private JTextArea areaItems;
-
     private BotonRedondo btnAgregar;
     private BotonRedondo btnModificar;
     private BotonRedondo btnEliminar;
@@ -49,9 +47,9 @@ public class VentanaItems extends JFrame {
     public VentanaItems() {
         control = Controladora.getInstancia();
 
-        setTitle("Administrar Items");
-        setSize(780, 680);
-        setMinimumSize(new Dimension(680, 600));
+        setTitle("Administrar Objetos");
+        setSize(900, 650);
+        setMinimumSize(new Dimension(760, 580));
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setResizable(true);
@@ -72,50 +70,82 @@ public class VentanaItems extends JFrame {
         JPanel panelPrincipal = new JPanel();
         panelPrincipal.setBackground(rosaFondo);
         panelPrincipal.setLayout(new BoxLayout(panelPrincipal, BoxLayout.Y_AXIS));
-        panelPrincipal.setBorder(BorderFactory.createEmptyBorder(25, 35, 25, 35));
+        panelPrincipal.setBorder(BorderFactory.createEmptyBorder(30, 45, 30, 45));
 
-        JLabel titulo = new JLabel("Administrar Items");
+        JLabel titulo = new JLabel("Administrar Objetos");
         titulo.setAlignmentX(CENTER_ALIGNMENT);
-        titulo.setFont(new Font("Segoe UI", Font.BOLD, 28));
+        titulo.setFont(new Font("Segoe UI", Font.BOLD, 30));
         titulo.setForeground(textoOscuro);
 
+        JLabel ayuda = new JLabel("Registre los objetos que luego podrán prestarse a una persona.");
+        ayuda.setAlignmentX(CENTER_ALIGNMENT);
+        ayuda.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        ayuda.setForeground(new Color(130, 80, 100));
+
+        JLabel nota = new JLabel("Ejemplos de objetos: Libro de POO, UNO, CD de música, DVD, juego de mesa.");
+        nota.setAlignmentX(CENTER_ALIGNMENT);
+        nota.setFont(new Font("Segoe UI", Font.ITALIC, 13));
+        nota.setForeground(new Color(130, 80, 100));
+
         panelPrincipal.add(titulo);
-        panelPrincipal.add(Box.createRigidArea(new Dimension(0, 25)));
+        panelPrincipal.add(Box.createRigidArea(new Dimension(0, 10)));
+        panelPrincipal.add(ayuda);
+        panelPrincipal.add(Box.createRigidArea(new Dimension(0, 5)));
+        panelPrincipal.add(nota);
+        panelPrincipal.add(Box.createRigidArea(new Dimension(0, 35)));
 
         JPanel panelFormulario = new JPanel();
         panelFormulario.setBackground(rosaFondo);
         panelFormulario.setLayout(new GridLayout(4, 2, 12, 12));
-        panelFormulario.setMaximumSize(new Dimension(700, 180));
+        panelFormulario.setMaximumSize(new Dimension(820, 190));
 
-        txtNombre = crearCampo();
-        txtDescripcion = crearCampo();
-        txtTipo = crearCampo();
-        txtCategoria = crearCampo();
+        txtNombre = crearCampo("Ejemplo: Libro de POO");
+        txtDescripcion = crearCampo("Ejemplo: Libro para estudiar programación");
+        txtTipo = crearCampo("Ejemplo: Libro, Juego, CD, DVD");
+        txtCategoria = crearCampo("Ejemplo: Estudio, Entretenimiento, Universidad");
 
-        panelFormulario.add(crearEtiqueta("Nombre del item:"));
+        panelFormulario.add(crearEtiqueta("Nombre del objeto:"));
         panelFormulario.add(txtNombre);
-        panelFormulario.add(crearEtiqueta("Descripción:"));
+
+        panelFormulario.add(crearEtiqueta("Descripción del objeto:"));
         panelFormulario.add(txtDescripcion);
-        panelFormulario.add(crearEtiqueta("Tipo:"));
+
+        panelFormulario.add(crearEtiqueta("Tipo del objeto:"));
         panelFormulario.add(txtTipo);
-        panelFormulario.add(crearEtiqueta("Categoría:"));
+
+        panelFormulario.add(crearEtiqueta("Categoría del objeto:"));
         panelFormulario.add(txtCategoria);
 
         panelPrincipal.add(panelFormulario);
-        panelPrincipal.add(Box.createRigidArea(new Dimension(0, 25)));
+        panelPrincipal.add(Box.createRigidArea(new Dimension(0, 15)));
+
+        JLabel notaTipo = new JLabel("Tipo: indica qué clase de objeto es. Categoría: ayuda a clasificarlo según su uso.");
+        notaTipo.setAlignmentX(CENTER_ALIGNMENT);
+        notaTipo.setFont(new Font("Segoe UI", Font.ITALIC, 13));
+        notaTipo.setForeground(new Color(130, 80, 100));
+
+        JLabel notaRegistro = new JLabel("Antes de registrar un objeto, se recomienda crear su tipo y categoría en la sección anterior.");
+        notaRegistro.setAlignmentX(CENTER_ALIGNMENT);
+        notaRegistro.setFont(new Font("Segoe UI", Font.ITALIC, 13));
+        notaRegistro.setForeground(new Color(130, 80, 100));
+
+        panelPrincipal.add(notaTipo);
+        panelPrincipal.add(Box.createRigidArea(new Dimension(0, 5)));
+        panelPrincipal.add(notaRegistro);
+        panelPrincipal.add(Box.createRigidArea(new Dimension(0, 35)));
 
         JPanel panelBotones = new JPanel();
         panelBotones.setBackground(rosaFondo);
-        panelBotones.setLayout(new GridLayout(2, 4, 12, 12));
-        panelBotones.setMaximumSize(new Dimension(720, 125));
+        panelBotones.setLayout(new GridLayout(2, 4, 14, 14));
+        panelBotones.setMaximumSize(new Dimension(820, 130));
 
-        btnAgregar = new BotonRedondo("Agregar", rosaBoton, rosaHover);
-        btnModificar = new BotonRedondo("Modificar", rosaBoton, rosaHover);
-        btnEliminar = new BotonRedondo("Eliminar", rosaBoton, rosaHover);
-        btnAgregarCategoria = new BotonRedondo("Agregar categoría", rosaBoton, rosaHover);
+        btnAgregar = new BotonRedondo("Registrar objeto", rosaBoton, rosaHover);
+        btnModificar = new BotonRedondo("Actualizar objeto", rosaBoton, rosaHover);
+        btnEliminar = new BotonRedondo("Eliminar objeto", rosaBoton, rosaHover);
+        btnAgregarCategoria = new BotonRedondo("Asignar categoría", rosaBoton, rosaHover);
         btnEliminarCategoria = new BotonRedondo("Quitar categoría", rosaBoton, rosaHover);
-        btnConsultar = new BotonRedondo("Consultar", rosaBoton, rosaHover);
-        btnLimpiar = new BotonRedondo("Limpiar", rosaBoton, rosaHover);
+        btnConsultar = new BotonRedondo("Ver objetos", rosaBoton, rosaHover);
+        btnLimpiar = new BotonRedondo("Limpiar campos", rosaBoton, rosaHover);
         btnCerrar = new BotonRedondo("Cerrar", new Color(230, 140, 170), new Color(220, 120, 155));
 
         panelBotones.add(btnAgregar);
@@ -130,18 +160,12 @@ public class VentanaItems extends JFrame {
         panelPrincipal.add(panelBotones);
         panelPrincipal.add(Box.createRigidArea(new Dimension(0, 25)));
 
-        areaItems = new JTextArea();
-        areaItems.setEditable(false);
-        areaItems.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        areaItems.setForeground(textoOscuro);
-        areaItems.setBackground(new Color(255, 245, 248));
-        areaItems.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        JLabel explicacion = new JLabel("Use el botón “Ver objetos” para consultar la lista de objetos registrados.");
+        explicacion.setAlignmentX(CENTER_ALIGNMENT);
+        explicacion.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        explicacion.setForeground(new Color(130, 80, 100));
 
-        JScrollPane scroll = new JScrollPane(areaItems);
-        scroll.setBorder(BorderFactory.createLineBorder(new Color(230, 170, 190), 1));
-        scroll.setPreferredSize(new Dimension(720, 260));
-
-        panelPrincipal.add(scroll);
+        panelPrincipal.add(explicacion);
 
         add(panelPrincipal, BorderLayout.CENTER);
     }
@@ -150,20 +174,19 @@ public class VentanaItems extends JFrame {
         JLabel etiqueta = new JLabel(texto);
         etiqueta.setFont(new Font("Segoe UI", Font.BOLD, 15));
         etiqueta.setForeground(new Color(90, 60, 75));
-
         return etiqueta;
     }
 
-    private JTextField crearCampo() {
+    private JTextField crearCampo(String ayuda) {
         JTextField campo = new JTextField();
         campo.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         campo.setForeground(new Color(90, 60, 75));
         campo.setBackground(new Color(255, 245, 248));
+        campo.setToolTipText(ayuda);
         campo.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(230, 170, 190), 1),
                 BorderFactory.createEmptyBorder(6, 8, 6, 8)
         ));
-
         return campo;
     }
 
@@ -182,24 +205,22 @@ public class VentanaItems extends JFrame {
         String nombre = txtNombre.getText();
         String descripcion = txtDescripcion.getText();
         String tipo = txtTipo.getText();
+        String categoria = txtCategoria.getText();
 
         if (nombre.isEmpty() || descripcion.isEmpty() || tipo.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Debe completar nombre, descripción y tipo.");
+            JOptionPane.showMessageDialog(this, "Debe completar nombre, descripción y tipo del objeto.");
             return;
         }
 
         control.agregarItem(nombre, descripcion, tipo);
 
-        String categoria = txtCategoria.getText();
-
         if (!categoria.isEmpty()) {
             control.agregarCategoriaAItem(nombre, categoria);
         }
 
-        JOptionPane.showMessageDialog(this, "Item agregado correctamente.");
+        JOptionPane.showMessageDialog(this, "Objeto registrado correctamente.");
 
         limpiarCampos();
-        mostrarItems();
     }
 
     private void modificarItem() {
@@ -208,7 +229,7 @@ public class VentanaItems extends JFrame {
         String tipo = txtTipo.getText();
 
         if (nombre.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Debe escribir el nombre del item a modificar.");
+            JOptionPane.showMessageDialog(this, "Debe escribir el nombre del objeto que desea actualizar.");
             return;
         }
 
@@ -219,23 +240,22 @@ public class VentanaItems extends JFrame {
 
         control.modificarItem(nombre, descripcion, tipo);
 
-        JOptionPane.showMessageDialog(this, "Item modificado correctamente.");
+        JOptionPane.showMessageDialog(this, "Objeto actualizado correctamente.");
 
         limpiarCampos();
-        mostrarItems();
     }
 
     private void eliminarItem() {
         String nombre = txtNombre.getText();
 
         if (nombre.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Debe escribir el nombre del item a eliminar.");
+            JOptionPane.showMessageDialog(this, "Debe escribir el nombre del objeto que desea eliminar.");
             return;
         }
 
         int respuesta = JOptionPane.showConfirmDialog(
                 this,
-                "¿Seguro que desea eliminar el item " + nombre + "?",
+                "¿Seguro que desea eliminar el objeto " + nombre + "?\nNo se eliminará si está prestado.",
                 "Confirmar eliminación",
                 JOptionPane.YES_NO_OPTION
         );
@@ -244,7 +264,6 @@ public class VentanaItems extends JFrame {
             control.eliminarItem(nombre);
             JOptionPane.showMessageDialog(this, "Proceso de eliminación realizado.");
             limpiarCampos();
-            mostrarItems();
         }
     }
 
@@ -253,16 +272,15 @@ public class VentanaItems extends JFrame {
         String nombreCategoria = txtCategoria.getText();
 
         if (nombreItem.isEmpty() || nombreCategoria.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Debe escribir el nombre del item y la categoría.");
+            JOptionPane.showMessageDialog(this, "Debe escribir el nombre del objeto y la categoría que desea asignar.");
             return;
         }
 
         control.agregarCategoriaAItem(nombreItem, nombreCategoria);
 
-        JOptionPane.showMessageDialog(this, "Categoría agregada al item.");
+        JOptionPane.showMessageDialog(this, "Categoría asignada al objeto.");
 
         limpiarCampos();
-        mostrarItems();
     }
 
     private void eliminarCategoriaDeItem() {
@@ -270,20 +288,33 @@ public class VentanaItems extends JFrame {
         String nombreCategoria = txtCategoria.getText();
 
         if (nombreItem.isEmpty() || nombreCategoria.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Debe escribir el nombre del item y la categoría.");
+            JOptionPane.showMessageDialog(this, "Debe escribir el nombre del objeto y la categoría que desea quitar.");
             return;
         }
 
         control.eliminarCategoriaDeItem(nombreItem, nombreCategoria);
 
-        JOptionPane.showMessageDialog(this, "Categoría eliminada del item.");
+        JOptionPane.showMessageDialog(this, "Categoría quitada del objeto.");
 
         limpiarCampos();
-        mostrarItems();
     }
 
     private void mostrarItems() {
-        areaItems.setText(control.generarReportePorItem());
+        JTextArea area = new JTextArea();
+        area.setEditable(false);
+        area.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+
+        String texto = "OBJETOS REGISTRADOS\n";
+        texto += "-----------------------------\n\n";
+        texto += "Este reporte muestra si los objetos están disponibles o prestados.\n\n";
+        texto += control.generarReportePorItem();
+
+        area.setText(texto);
+
+        JScrollPane scroll = new JScrollPane(area);
+        scroll.setPreferredSize(new Dimension(650, 400));
+
+        JOptionPane.showMessageDialog(this, scroll, "Objetos Registrados", JOptionPane.INFORMATION_MESSAGE);
     }
 
     private void limpiarCampos() {
@@ -315,13 +346,11 @@ public class VentanaItems extends JFrame {
             setCursor(new Cursor(Cursor.HAND_CURSOR));
 
             addMouseListener(new java.awt.event.MouseAdapter() {
-                @Override
                 public void mouseEntered(java.awt.event.MouseEvent evt) {
                     mouseEncima = true;
                     repaint();
                 }
 
-                @Override
                 public void mouseExited(java.awt.event.MouseEvent evt) {
                     mouseEncima = false;
                     repaint();
@@ -329,7 +358,6 @@ public class VentanaItems extends JFrame {
             });
         }
 
-        @Override
         protected void paintComponent(Graphics g) {
             Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
