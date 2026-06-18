@@ -115,7 +115,8 @@ public class VentanaPrincipal extends JFrame {
         });
 
         btnPrestamos.addActionListener(e -> {
-            JOptionPane.showMessageDialog(null, "Aqui se abrira la ventana de prestamos.");
+            VentanaPrestamos ventana = new VentanaPrestamos();
+            ventana.setVisible(true);
         });
 
         btnReportes.addActionListener(e -> {
