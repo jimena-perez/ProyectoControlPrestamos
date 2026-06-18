@@ -17,6 +17,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import control.Controladora;
 
@@ -37,6 +38,7 @@ public class VentanaPrincipal extends JFrame {
 
     public VentanaPrincipal() {
         control = Controladora.getInstancia();
+        control.cargarDatos();
 
         setTitle("Control de Prestamos");
         setSize(700, 760);
@@ -47,6 +49,8 @@ public class VentanaPrincipal extends JFrame {
 
         inicializarComponentes();
         agregarEventos();
+
+        SwingUtilities.invokeLater(() -> mostrarAlertasPendientes());
     }
 
     private void inicializarComponentes() {
@@ -73,7 +77,7 @@ public class VentanaPrincipal extends JFrame {
 
         btnPersonas = new BotonRedondo("Administrar personas", rosaBoton, rosaBotonHover);
         btnTiposCategorias = new BotonRedondo("Administrar tipos y categorias", rosaBoton, rosaBotonHover);
-        btnItems = new BotonRedondo("Administrar items", rosaBoton, rosaBotonHover);
+        btnItems = new BotonRedondo("Administrar objetos", rosaBoton, rosaBotonHover);
         btnPrestamos = new BotonRedondo("Administrar prestamos", rosaBoton, rosaBotonHover);
         btnReportes = new BotonRedondo("Ver reportes", rosaBoton, rosaBotonHover);
         btnGuardar = new BotonRedondo("Guardar datos", rosaBoton, rosaBotonHover);
@@ -132,11 +136,26 @@ public class VentanaPrincipal extends JFrame {
         btnCargar.addActionListener(e -> {
             control.cargarDatos();
             JOptionPane.showMessageDialog(null, "Datos cargados correctamente.");
+            mostrarAlertasPendientes();
         });
 
         btnSalir.addActionListener(e -> {
+            control.guardarDatos();
             System.exit(0);
         });
+    }
+
+    private void mostrarAlertasPendientes() {
+        String alertas = control.revisarAlertas();
+
+        if (alertas != null && !alertas.isEmpty()) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    alertas,
+                    "Alertas de prestamos",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+        }
     }
 
     class BotonRedondo extends JButton {
@@ -163,13 +182,11 @@ public class VentanaPrincipal extends JFrame {
             setMaximumSize(new Dimension(420, 55));
 
             addMouseListener(new java.awt.event.MouseAdapter() {
-                @Override
                 public void mouseEntered(java.awt.event.MouseEvent evt) {
                     mouseEncima = true;
                     repaint();
                 }
 
-                @Override
                 public void mouseExited(java.awt.event.MouseEvent evt) {
                     mouseEncima = false;
                     repaint();
@@ -177,7 +194,6 @@ public class VentanaPrincipal extends JFrame {
             });
         }
 
-        @Override
         protected void paintComponent(Graphics g) {
             Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
