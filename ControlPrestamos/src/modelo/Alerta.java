@@ -19,6 +19,14 @@ public class Alerta {
         this.prestamo = null;
     }
 
+    public Alerta(int tiempo, boolean recurrente, String mensaje, LocalDate fechaInicio) {
+        this.tiempo = tiempo;
+        this.recurrente = recurrente;
+        this.mensaje = mensaje;
+        this.fechaInicio = fechaInicio;
+        this.prestamo = null;
+    }
+
     public int getTiempo() {
         return tiempo;
     }
@@ -60,7 +68,7 @@ public class Alerta {
     }
 
     public boolean debeMostrarse() {
-        if (fechaInicio == null) {
+        if (fechaInicio == null || tiempo <= 0) {
             return false;
         }
 
@@ -79,6 +87,7 @@ public class Alerta {
 
     @Override
     public String toString() {
-        return mensaje + " - Fecha inicio: " + fechaInicio;
+        String tipo = recurrente ? "Recurrente" : "Una sola vez";
+        return mensaje + " - desde " + fechaInicio + " - cada " + tiempo + " días - " + tipo;
     }
 }
