@@ -14,7 +14,6 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -24,7 +23,6 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import control.Controladora;
-import modelo.Persona;
 
 public class VentanaPersonas extends JFrame {
 
@@ -32,15 +30,12 @@ public class VentanaPersonas extends JFrame {
 
     private Controladora control;
 
-    private JComboBox<String> cmbPersonas;
-
     private JTextField txtNombre;
     private JTextField txtTelefono;
     private JTextField txtCorreo;
 
     private BotonRedondo btnRegistrar;
-    private BotonRedondo btnCargarSeleccion;
-    private BotonRedondo btnActualizar;
+    private BotonRedondo btnModificar;
     private BotonRedondo btnEliminar;
     private BotonRedondo btnConsultar;
     private BotonRedondo btnLimpiar;
@@ -50,15 +45,14 @@ public class VentanaPersonas extends JFrame {
         control = Controladora.getInstancia();
 
         setTitle("Administrar Personas");
-        setSize(850, 700);
-        setMinimumSize(new Dimension(740, 620));
+        setSize(800, 650);
+        setMinimumSize(new Dimension(700, 580));
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setResizable(true);
 
         inicializarComponentes();
         agregarEventos();
-        actualizarComboPersonas();
     }
 
     private void inicializarComponentes() {
@@ -73,50 +67,27 @@ public class VentanaPersonas extends JFrame {
         JPanel panelPrincipal = new JPanel();
         panelPrincipal.setBackground(rosaFondo);
         panelPrincipal.setLayout(new BoxLayout(panelPrincipal, BoxLayout.Y_AXIS));
-        panelPrincipal.setBorder(BorderFactory.createEmptyBorder(30, 45, 30, 45));
+        panelPrincipal.setBorder(BorderFactory.createEmptyBorder(35, 45, 30, 45));
 
         JLabel titulo = new JLabel("Administrar Personas");
         titulo.setAlignmentX(CENTER_ALIGNMENT);
         titulo.setFont(new Font("Segoe UI", Font.BOLD, 30));
         titulo.setForeground(textoOscuro);
 
-        JLabel ayuda = new JLabel("Registre personas o seleccione una existente para editarla o eliminarla.");
+        JLabel ayuda = new JLabel("Registre, modifique o elimine personas del sistema.");
         ayuda.setAlignmentX(CENTER_ALIGNMENT);
         ayuda.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         ayuda.setForeground(new Color(130, 80, 100));
 
-        JLabel nota = new JLabel("La selección evita tener que escribir el nombre exacto de la persona.");
-        nota.setAlignmentX(CENTER_ALIGNMENT);
-        nota.setFont(new Font("Segoe UI", Font.ITALIC, 13));
-        nota.setForeground(new Color(130, 80, 100));
-
         panelPrincipal.add(titulo);
         panelPrincipal.add(Box.createRigidArea(new Dimension(0, 10)));
         panelPrincipal.add(ayuda);
-        panelPrincipal.add(Box.createRigidArea(new Dimension(0, 5)));
-        panelPrincipal.add(nota);
         panelPrincipal.add(Box.createRigidArea(new Dimension(0, 30)));
-
-        JPanel panelSeleccion = new JPanel();
-        panelSeleccion.setBackground(rosaFondo);
-        panelSeleccion.setLayout(new GridLayout(1, 2, 12, 12));
-        panelSeleccion.setMaximumSize(new Dimension(760, 45));
-
-        cmbPersonas = new JComboBox<String>();
-        cmbPersonas.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        cmbPersonas.setForeground(textoOscuro);
-        cmbPersonas.setBackground(new Color(255, 245, 248));
-
-        panelSeleccion.add(crearEtiqueta("Seleccionar persona registrada:"));
-        panelSeleccion.add(cmbPersonas);
-
-        panelPrincipal.add(panelSeleccion);
-        panelPrincipal.add(Box.createRigidArea(new Dimension(0, 25)));
 
         JPanel panelFormulario = new JPanel();
         panelFormulario.setBackground(rosaFondo);
         panelFormulario.setLayout(new GridLayout(3, 2, 12, 12));
-        panelFormulario.setMaximumSize(new Dimension(760, 145));
+        panelFormulario.setMaximumSize(new Dimension(720, 150));
 
         txtNombre = crearCampo("Ejemplo: Jimena");
         txtTelefono = crearCampo("Ejemplo: 8888-8888");
@@ -132,32 +103,30 @@ public class VentanaPersonas extends JFrame {
         panelFormulario.add(txtCorreo);
 
         panelPrincipal.add(panelFormulario);
-        panelPrincipal.add(Box.createRigidArea(new Dimension(0, 20)));
+        panelPrincipal.add(Box.createRigidArea(new Dimension(0, 18)));
 
-        JLabel instruccion = new JLabel("Para editar o eliminar, seleccione una persona y presione “Cargar selección”.");
-        instruccion.setAlignmentX(CENTER_ALIGNMENT);
-        instruccion.setFont(new Font("Segoe UI", Font.ITALIC, 13));
-        instruccion.setForeground(new Color(130, 80, 100));
+        JLabel nota = new JLabel("Para modificar o eliminar, escriba el nombre exacto de la persona.");
+        nota.setAlignmentX(CENTER_ALIGNMENT);
+        nota.setFont(new Font("Segoe UI", Font.ITALIC, 13));
+        nota.setForeground(new Color(130, 80, 100));
 
-        panelPrincipal.add(instruccion);
+        panelPrincipal.add(nota);
         panelPrincipal.add(Box.createRigidArea(new Dimension(0, 25)));
 
         JPanel panelBotones = new JPanel();
         panelBotones.setBackground(rosaFondo);
-        panelBotones.setLayout(new GridLayout(2, 4, 14, 14));
-        panelBotones.setMaximumSize(new Dimension(780, 130));
+        panelBotones.setLayout(new GridLayout(2, 3, 14, 14));
+        panelBotones.setMaximumSize(new Dimension(720, 125));
 
         btnRegistrar = new BotonRedondo("Registrar persona", rosaBoton, rosaHover);
-        btnCargarSeleccion = new BotonRedondo("Cargar selección", rosaBoton, rosaHover);
-        btnActualizar = new BotonRedondo("Actualizar persona", rosaBoton, rosaHover);
+        btnModificar = new BotonRedondo("Modificar persona", rosaBoton, rosaHover);
         btnEliminar = new BotonRedondo("Eliminar persona", rosaBoton, rosaHover);
         btnConsultar = new BotonRedondo("Ver personas", rosaBoton, rosaHover);
         btnLimpiar = new BotonRedondo("Limpiar campos", rosaBoton, rosaHover);
         btnCerrar = new BotonRedondo("Cerrar", new Color(230, 140, 170), new Color(220, 120, 155));
 
         panelBotones.add(btnRegistrar);
-        panelBotones.add(btnCargarSeleccion);
-        panelBotones.add(btnActualizar);
+        panelBotones.add(btnModificar);
         panelBotones.add(btnEliminar);
         panelBotones.add(btnConsultar);
         panelBotones.add(btnLimpiar);
@@ -198,21 +167,11 @@ public class VentanaPersonas extends JFrame {
 
     private void agregarEventos() {
         btnRegistrar.addActionListener(e -> registrarPersona());
-        btnCargarSeleccion.addActionListener(e -> cargarPersonaSeleccionada());
-        btnActualizar.addActionListener(e -> actualizarPersona());
+        btnModificar.addActionListener(e -> modificarPersona());
         btnEliminar.addActionListener(e -> eliminarPersona());
         btnConsultar.addActionListener(e -> mostrarPersonas());
         btnLimpiar.addActionListener(e -> limpiarCampos());
         btnCerrar.addActionListener(e -> dispose());
-    }
-
-    private void actualizarComboPersonas() {
-        cmbPersonas.removeAllItems();
-        cmbPersonas.addItem("Seleccione una persona");
-
-        for (Persona persona : control.obtenerListadoPersonas()) {
-            cmbPersonas.addItem(persona.getNombre());
-        }
     }
 
     private void registrarPersona() {
@@ -230,82 +189,54 @@ public class VentanaPersonas extends JFrame {
         if (agregado) {
             JOptionPane.showMessageDialog(this, "Persona registrada correctamente.");
             limpiarCampos();
-            actualizarComboPersonas();
         } else {
             JOptionPane.showMessageDialog(this, "No se pudo registrar. Puede que la persona ya exista.");
         }
     }
 
-    private void cargarPersonaSeleccionada() {
-        String nombreSeleccionado = obtenerSeleccionCombo();
-
-        if (nombreSeleccionado == null) {
-            JOptionPane.showMessageDialog(this, "Debe seleccionar una persona registrada.");
-            return;
-        }
-
-        Persona persona = control.obtenerPersona(nombreSeleccionado);
-
-        if (persona != null) {
-            txtNombre.setText(persona.getNombre());
-            txtTelefono.setText(persona.getTelefono());
-            txtCorreo.setText(persona.getCorreo());
-        } else {
-            JOptionPane.showMessageDialog(this, "No se encontró la persona seleccionada.");
-        }
-    }
-
-    private void actualizarPersona() {
-        String nombreSeleccionado = obtenerSeleccionCombo();
-
-        if (nombreSeleccionado == null) {
-            JOptionPane.showMessageDialog(this, "Debe seleccionar una persona para actualizar.");
-            return;
-        }
-
+    private void modificarPersona() {
+        String nombre = txtNombre.getText();
         String telefono = txtTelefono.getText();
         String correo = txtCorreo.getText();
 
-        if (telefono.isEmpty() || correo.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Debe escribir el nuevo teléfono y correo.");
+        if (nombre.isEmpty() || telefono.isEmpty() || correo.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Debe escribir nombre, teléfono y correo.");
             return;
         }
 
-        boolean modificado = control.modificarPersona(nombreSeleccionado, telefono, correo);
+        boolean modificado = control.modificarPersona(nombre, telefono, correo);
 
         if (modificado) {
-            JOptionPane.showMessageDialog(this, "Persona actualizada correctamente.");
+            JOptionPane.showMessageDialog(this, "Persona modificada correctamente.");
             limpiarCampos();
-            actualizarComboPersonas();
         } else {
-            JOptionPane.showMessageDialog(this, "No se pudo actualizar la persona seleccionada.");
+            JOptionPane.showMessageDialog(this, "No se pudo modificar. Revise que la persona exista.");
         }
     }
 
     private void eliminarPersona() {
-        String nombreSeleccionado = obtenerSeleccionCombo();
+        String nombre = txtNombre.getText();
 
-        if (nombreSeleccionado == null) {
-            JOptionPane.showMessageDialog(this, "Debe seleccionar una persona para eliminar.");
+        if (nombre.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Debe escribir el nombre de la persona que desea eliminar.");
             return;
         }
 
         int respuesta = JOptionPane.showConfirmDialog(
                 this,
-                "¿Seguro que desea eliminar a " + nombreSeleccionado + "?\nNo se eliminará si tiene préstamos activos.",
+                "¿Seguro que desea eliminar a " + nombre + "?\nNo se eliminará si tiene préstamos activos.",
                 "Confirmar eliminación",
                 JOptionPane.YES_NO_OPTION
         );
 
         if (respuesta == JOptionPane.YES_OPTION) {
-            boolean eliminado = control.eliminarPersona(nombreSeleccionado);
+            boolean eliminado = control.eliminarPersona(nombre);
 
             if (eliminado) {
                 JOptionPane.showMessageDialog(this, "Persona eliminada correctamente.");
                 limpiarCampos();
-                actualizarComboPersonas();
             } else {
-                JOptionPane.showMessageDialog(this, "No se pudo eliminar. Puede que tenga préstamos activos.");
+                JOptionPane.showMessageDialog(this, "No se pudo eliminar. Puede que tenga préstamos activos o no exista.");
             }
         }
     }
@@ -327,27 +258,10 @@ public class VentanaPersonas extends JFrame {
         JOptionPane.showMessageDialog(this, scroll, "Personas Registradas", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    private String obtenerSeleccionCombo() {
-        Object seleccionado = cmbPersonas.getSelectedItem();
-
-        if (seleccionado == null) {
-            return null;
-        }
-
-        String texto = seleccionado.toString();
-
-        if (texto.equals("Seleccione una persona")) {
-            return null;
-        }
-
-        return texto;
-    }
-
     private void limpiarCampos() {
         txtNombre.setText("");
         txtTelefono.setText("");
         txtCorreo.setText("");
-        cmbPersonas.setSelectedIndex(0);
     }
 
     class BotonRedondo extends JButton {
